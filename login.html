@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Login</title>
+        <link rel="stylesheet" href="styles/style.css">
+    </head>
+
+    <body>
+        <div class="header">
+            <div class="player_menu_container">
+                <button id="player_menu_button" type="button">&#8801</button>
+            </div>
+            <h1 id="title">Log in</h1> 
+            <h1 class="filler"></h1> <!-- uses css display flex needs a third object split the header in 3rds-->
+        </div>
+
+        <div class="filler2"></div>
+
+        <div id="menus_container">
+            <div id="player_menu">
+                <a href="index.html">Home</a>
+                <a href="#">Inventory</a>
+                <a href="login.html">Account</a>
+            </div>
+
+            <div id="secondary_menu">
+                <forms>
+                    <lable for="email"><b class="info">Email or Username</b></lable>
+                    <br>
+                    <input type="text" name="email" id="email">
+                    <br>
+                    <label for="password"><b class="info">Password</b></label>
+                    <br>
+                    <input type="text" name="password" id="password">
+                    <br>
+                    <p>Need to make an account: <a href="create_account.html">Create a New Account.</a></p>
+                </forms>
+            </div>
+        </div>
+    </body>
+    <script src="scripts/script.js"></script>
+</html>
