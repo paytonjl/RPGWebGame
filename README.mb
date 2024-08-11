@@ -1,0 +1,23 @@
+Install docker desktop
+Install mongodb by running the following command in the project directory (RPGWebGame): 
+npm install mongodb
+
+Create docker-compose.yml in the root folder and add the following:
+services:
+  mongo:
+    image: mongo:latest
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE: testDatabase
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data_container:/data/db
+
+volumes:
+  mongodb_data_container:
+
+To start the MongoDB docker container, make sure Docker is installed in your system and then run:
+docker-compose up -d
+This will start mongodb up in the background. To turn it back off do:
+docker-compose down
