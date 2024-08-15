@@ -6,16 +6,24 @@ export default class AccountsController {
         try {
             const email = req.body.email
             const username = req.body.username
-            const password = req.body.password
+            const password1 = req.body.password1
+            const password2 = req.body.password2
+            console.log("we are here")//test
 
-            const accountResponse = await accountsDAO.createAccount( // Probs not here but this needs to have possible erros like username taken or email taken
+            const accountResponse = await accountsDAO.createAccount( 
                 email,
                 username,
-                password
+                password1,
+                password2
             )
-            res.json({ status: "success", message: "Account created successfully" })
+            if(accountResponse && accountResponse.error) {
+                throw new Error(accountResponse.error)
+            } else {
+                res.json({ status: "success", message: "Account created successfully" })
+            }
+            
         } catch (e) {
-            res.status(500).json({ error: e.message })
+            res.status(500).json({ status: "failure", error: e.message })
         }
     }
 
@@ -28,9 +36,16 @@ export default class AccountsController {
                 emailOrUsername,
                 password
             )
-            res.json({ status: "success" })
+            console.log(emailOrUsername) //test
+            console.log(accountResponse.error)
+            if(accountResponse && accountResponse.error) {
+                throw new Error(accountResponse.error)
+            } else {
+                res.json({ status: "success" })
+            }
         } catch (e) {
-            res.status(500).json({ error: e.message })
-        }
+            console.log("account not found")
+            res.status(401).json({ status: "failure", error: e.message })
+        } // could add an if statment to make sure the error has a string 
     }
 }

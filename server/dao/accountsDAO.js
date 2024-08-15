@@ -15,13 +15,19 @@ export default class AccountsDAO {
         }
     }
 
-    static async createAccount(email, username, password){
+    static async createAccount(email, username, password1, password2){
         try {
+            if (password1 != password2) {
+                throw new Error("passwords do not match")
+            }
+
+            // insures an account with this email does not exist 
             const existingEmailFilter = {email: email}
             const existingEmail = await accounts.findOne(existingEmailFilter)
             if (existingEmail) {
                 throw new Error("An account with that email already exists")
             }
+            // insures account with same username does not exist
             const existingUsernameFilter = {username: username}
             const existingUsername = await accounts.findOne(existingUsernameFilter)
             if (existingUsername) {
@@ -31,11 +37,11 @@ export default class AccountsDAO {
             const accountDoc = {
                 email: email,
                 username: username,
-                password: password,
+                password: password1,
             }
             return await accounts.insertOne(accountDoc)
         } catch (e) {
-            console.error(`unable to create account: ${e}`)
+            console.error(`unable to create account: ${e}`) //test
             return { error: e }
         }
     }
@@ -52,10 +58,12 @@ export default class AccountsDAO {
                 console.log("Found the Account") // test
                 return account
             } else {
-                return {error: "Unable to find account matching" }
+                //console.log("Unable to find the Account") // test
+                throw new Error("Unable to find account matching")
             }
         } catch (e) {
-            console.error(`unable to login to account: ${e}`)
+            console.log("Unable to find the Account") // test 
+            console.error(`unable to login to account: ${e}`) //test
             return { error: e }
         }
         

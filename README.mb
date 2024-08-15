@@ -1,0 +1,14 @@
+A work in progress webgame for pratice and fun
+
+currently to get this running will need to install all libraries 
+    node js (will also have to add the node_modules folder to the file)
+    express
+    mongodb
+    dotenv (will need to create an env file with the varialbe MongoDB_API_KEY this will be your uri for mongodb)
+    cors
+
+get a mongodb connection mine is just the vscode extention and run in the terminal of your IDE ```node server index.js```
+then access your htmls i use a live server for vscode 
+
+so far i just have a connection to the mongodb server and that allows for creating accounts which will be stored on the server 
+and the ability to be able to login to the accounts (this does nothing more than telling you that your username and password were correct)
