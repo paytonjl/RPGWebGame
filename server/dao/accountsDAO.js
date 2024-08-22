@@ -1,7 +1,10 @@
 import mongodb from "mongodb"
+import dotenv from "dotenv"
+import bcrypt from "bcrypt"
 //const ObjectID = mongodb.ObjectID not using it i think this will allow us to work with object ids that are auto created in the object
 
 let accounts
+const saltRounds = process.env["saltRounds"]
 
 export default class AccountsDAO {
     static async injectDB(conn) {
@@ -34,10 +37,13 @@ export default class AccountsDAO {
                 throw new Error("An account with that username already exists")
             }
 
+            const salt = await bcrypt.genSalt(saltRounds);
+            const hashedPassword = await bcrypt.hash(password1, salt);
+
             const accountDoc = {
                 email: email,
                 username: username,
-                password: password1,
+                password: hashedPassword,
             }
             return await accounts.insertOne(accountDoc)
         } catch (e) {
@@ -48,15 +54,25 @@ export default class AccountsDAO {
     
     static async loginAccount(emailOrUsername, password){
         try {
-            let loginAccountFilter = {email: emailOrUsername, password: password}
+            let match
+            let loginAccountFilter = {email: emailOrUsername}
             let account = await accounts.findOne(loginAccountFilter)
             if (!account){
-                loginAccountFilter = {username: emailOrUsername, password: password}
+                loginAccountFilter = {username: emailOrUsername}
                 account = await accounts.findOne(loginAccountFilter)
+                if (account) {
+                    match = await bcrypt.compare(password, account.password)
+                }
+            } else {
+                match = await bcrypt.compare(password, account.password)
             }
             if (account){
-                console.log("Found the Account") // test
-                return account
+                if (match) {
+                    console.log("Found the Account") // test
+                    return account
+                } else {
+                    throw new Error("incorrect password")
+                }
             } else {
                 //console.log("Unable to find the Account") // test
                 throw new Error("Unable to find account matching")

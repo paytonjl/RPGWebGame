@@ -1,7 +1,6 @@
 import accountsDAO from "../dao/accountsDAO.js"
 
 export default class AccountsController {
-
     static async apiCreateAccount(req, res, next) {
         try {
             const email = req.body.email
@@ -21,7 +20,6 @@ export default class AccountsController {
             } else {
                 res.json({ status: "success", message: "Account created successfully" })
             }
-            
         } catch (e) {
             res.status(500).json({ status: "failure", error: e.message })
         }
@@ -36,15 +34,17 @@ export default class AccountsController {
                 emailOrUsername,
                 password
             )
-            console.log(emailOrUsername) //test
-            console.log(accountResponse.error)
+            console.log(emailOrUsername) // test
+            console.log(accountResponse.error) // test
             if(accountResponse && accountResponse.error) {
                 throw new Error(accountResponse.error)
             } else {
+                console.log(accountResponse._id) // test
+                req.session.userId = accountResponse._id
                 res.json({ status: "success" })
             }
         } catch (e) {
-            console.log("account not found")
+            console.log("account not found") // test
             res.status(401).json({ status: "failure", error: e.message })
         } // could add an if statment to make sure the error has a string 
     }
