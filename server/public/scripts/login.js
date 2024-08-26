@@ -9,7 +9,8 @@ document.getElementById("loginForm").addEventListener("submit", function(event) 
 
     fetch((apiLink + "login"), {
         method: 'POST',
-        //credentials: 'include', // added this hopefully works for setting up session
+        //mode: "cors",
+        //credentials: 'include', // this causes error 
         headers: {
             'Content-Type': 'application/json',
         },
