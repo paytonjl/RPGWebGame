@@ -1,4 +1,5 @@
 import accountsDAO from "../dao/accountsDAO.js"
+import { AccountButtonCreator } from "../public/scripts/AccountButtonCreator.js"
 
 export default class AccountsController {
     static async apiCreateAccount(req, res, next) {
@@ -39,9 +40,16 @@ export default class AccountsController {
             if(accountResponse && accountResponse.error) {
                 throw new Error(accountResponse.error)
             } else {
-                console.log(accountResponse._id) // test
-                req.session.userId = accountResponse._id
-                res.json({ status: "success" })
+                if(req.session.userId)
+                {
+                    console.log("You're already logged in champ" + req.session.userId)
+                }
+                else
+                {
+                    //console.log(accountResponse._id) // test
+                    req.session.userId = accountResponse._id
+                    res.json({ status: "success" })
+                }
             }
         } catch (e) {
             console.log("account not found") // test

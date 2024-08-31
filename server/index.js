@@ -56,6 +56,15 @@ app.use("/api/v1/accounts", accounts)
 app.use(express.static(__dirname))
 app.get("/", (req, res) => {
     res.sendFile(join(__dirname, "/public/views/index.html"));
+    if(req.session.userId == undefined)
+    {
+        console.log("user not logged in")
+    }
+    else
+    {
+        console.log("user logged in")
+    }
+    console.log("user id " + req.session.userId)
 });
 app.get("/login", (req, res) => {
     res.sendFile(join(__dirname, "/public/views/login.html"));

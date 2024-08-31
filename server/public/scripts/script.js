@@ -4,8 +4,6 @@ let coin = 0;
 let inventory = ["stick"];
 let health = 100;
 
-
-
 // initialize buttons
 const player_menu_button = document.getElementById("player_menu_button");
 const player_menu = document.getElementById("player_menu");
