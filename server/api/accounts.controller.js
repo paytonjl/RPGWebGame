@@ -1,5 +1,4 @@
 import accountsDAO from "../dao/accountsDAO.js"
-import { AccountButtonCreator } from "../public/scripts/AccountButtonCreator.js"
 
 export default class AccountsController {
     static async apiCreateAccount(req, res, next) {
