@@ -26,6 +26,7 @@ document.getElementById("create_accountForm").addEventListener("submit", functio
         if (data.status === "success") {
             // Handle successful login here
             document.getElementById('test1').innerText = "Account created successful!";
+            window.location.href = '/';
         } else {
             // Handle error
             document.getElementById('test1').innerText = data.error || "An error occurred.";  // is this needed here or just need to throw a new error

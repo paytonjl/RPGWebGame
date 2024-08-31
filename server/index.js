@@ -5,6 +5,7 @@ import AccountsDAO from "./dao/accountsDAO.js"
 import session from "express-session" 
 import MongoStore from "connect-mongo" 
 import express from "express"
+import requestIp from "request-ip"
 import accounts from "./api/accounts.route.js"
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -14,11 +15,12 @@ dotenv.config()
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const port = 8000
+const port = 8000;
 
-const app = express()
-app.use(express.json())
-app.use(express.static(__dirname + "/public"))
+const app = express();
+app.use(express.json());
+app.use(express.static(__dirname + "/public"));
+app.use(requestIp.mw());
 
 const MongoClient = mongodb.MongoClient
 const uri = process.env["MongoDB_API_KEY"]
@@ -58,11 +60,11 @@ app.get("/", (req, res) => {
     res.sendFile(join(__dirname, "/public/views/index.html"));
     if(req.session.userId == undefined)
     {
-        console.log("user not logged in")
+        console.log("user not logged in");
     }
     else
     {
-        console.log("user logged in")
+        console.log("user logged in");
     }
     console.log("user id " + req.session.userId)
 });

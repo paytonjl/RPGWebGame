@@ -1,4 +1,5 @@
 import accountsDAO from "../dao/accountsDAO.js"
+import requestIp from "request-ip"
 
 export default class AccountsController {
     static async apiCreateAccount(req, res, next) {
@@ -27,6 +28,46 @@ export default class AccountsController {
 
     static async apiLoginAccount(req, res, next) {
         try {
+            const emailOrUsername = req.body.emailOrUsername
+            const password = req.body.password
+            const ipAddress = req.clientIp;
+
+            console.log("ip address: " + ipAddress)
+            const accountResponse = await accountsDAO.loginAccount( 
+                emailOrUsername,
+                password,
+                ipAddress,
+            )
+            console.log(emailOrUsername) // test
+            console.log(accountResponse.error) // test
+            if(accountResponse && accountResponse.error) {
+                throw new Error(accountResponse.error)
+            } else {
+                if(req.session.userId)
+                {
+                    console.log("You're already logged in champ" + req.session.userId)
+                }
+                else
+                {
+                    //console.log(accountResponse._id) // test
+                    req.session.userId = accountResponse._id
+                    res.json({ status: "success" })
+                }
+            }
+        } catch (e) {
+            console.log("account not found") // test
+            res.status(401).json({ status: "failure", error: e.message })
+        } // could add an if statment to make sure the error has a string 
+    }
+
+    static async apiGetUsername(req, res, next) {
+        try {
+            if(!req.session.userId)
+            {
+                res.status(401).json({ status: "Not Logged In", error: e.message })
+                return;
+            }
+
             const emailOrUsername = req.body.emailOrUsername
             const password = req.body.password
 

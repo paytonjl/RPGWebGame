@@ -5,7 +5,6 @@ document.getElementById("loginForm").addEventListener("submit", function(event) 
 
     const emailOrUsername = document.getElementById("emailOrUsername").value;
     const password = document.getElementById("password").value;
-    //console.log(emailOrUsername+" "+password); should not be needed
 
     fetch((apiLink + "login"), {
         method: 'POST',

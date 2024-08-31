@@ -44,6 +44,8 @@ export default class AccountsDAO {
                 email: email,
                 username: username,
                 password: hashedPassword,
+                lastSession: null,
+                lastIPAddress: null,
             }
             return await accounts.insertOne(accountDoc)
         } catch (e) {
@@ -52,11 +54,12 @@ export default class AccountsDAO {
         }
     }
     
-    static async loginAccount(emailOrUsername, password){
+    static async loginAccount(emailOrUsername, password, currentIPAddress){
         try {
             let match
             let loginAccountFilter = {email: emailOrUsername}
             let account = await accounts.findOne(loginAccountFilter)
+
             if (!account){
                 loginAccountFilter = {username: emailOrUsername}
                 account = await accounts.findOne(loginAccountFilter)
@@ -69,6 +72,24 @@ export default class AccountsDAO {
             if (account){
                 if (match) {
                     console.log("Found the Account") // test
+                    if(currentIPAddress != null)
+                    {
+                        try {
+                            const result = await accounts.updateOne(
+                                loginAccountFilter,
+                                { $set: {lastIPAddress: currentIPAddress}}
+                            );
+                            
+                            console.log(`Updated ${result.modifiedCount} documents`);
+                        } catch (e) {
+                            console.log("Unable to set last IP address") // test 
+                        }
+                    }
+                    else
+                    {
+                        console.log("No ip address to log");
+                    }
+
                     return account
                 } else {
                     throw new Error("incorrect password")
