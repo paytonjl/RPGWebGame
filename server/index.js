@@ -53,10 +53,9 @@ try {
     console.error("Failed to initialize MongoStore:", error);
 }
 
-//routes
-app.use("/api/v1/accounts", accounts)
-app.use(express.static(__dirname))
-app.get("/", (req, res) => {
+export function redirectToHome()
+{
+
     res.sendFile(join(__dirname, "/public/views/index.html"));
     if(req.session.userId == undefined)
     {
@@ -67,7 +66,23 @@ app.get("/", (req, res) => {
         console.log("user logged in");
     }
     console.log("user id " + req.session.userId)
+}
+
+//routes
+app.use("/api/v1/accounts", accounts)
+app.use(express.static(__dirname))
+app.get("/", (req, res) => {
+    res.sendFile(join(__dirname, "/public/views/index.html"));
 });
+app.get('/some-route', (req, res) => {
+    console.log('Reached redirect point');
+    res.redirect('/');
+});
+
+app.get('/redirect-to-home', (req, res) => {
+    res.redirect('/');
+});
+
 app.get("/login", (req, res) => {
     res.sendFile(join(__dirname, "/public/views/login.html"));
 });

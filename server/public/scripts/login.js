@@ -15,7 +15,7 @@ document.getElementById("loginForm").addEventListener("submit", function(event) 
         },
         body: JSON.stringify({
             emailOrUsername: emailOrUsername,
-            password: password
+            password: password,
         }),
     })
     .then(response => response.json())
@@ -31,7 +31,7 @@ document.getElementById("loginForm").addEventListener("submit", function(event) 
         }
     })
     .catch((error) => {
-        console.error('Error:', error); //test
+        console.error('Error:' + error); //test
         document.getElementById('test').innerText = "An error occurred.";
     });
 });

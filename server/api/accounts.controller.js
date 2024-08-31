@@ -1,99 +1,94 @@
-import accountsDAO from "../dao/accountsDAO.js"
-import requestIp from "request-ip"
+import accountsDAO from "../dao/accountsDAO.js";
+import requestIp from "request-ip";
 
 export default class AccountsController {
     static async apiCreateAccount(req, res, next) {
         try {
-            const email = req.body.email
-            const username = req.body.username
-            const password1 = req.body.password1
-            const password2 = req.body.password2
-            console.log("we are here")//test
+            const email = req.body.email;
+            const username = req.body.username;
+            const password1 = req.body.password1;
+            const password2 = req.body.password2;
 
-            const accountResponse = await accountsDAO.createAccount( 
+            const accountResponse = await accountsDAO.createAccount(
                 email,
                 username,
                 password1,
                 password2
-            )
-            if(accountResponse && accountResponse.error) {
-                throw new Error(accountResponse.error)
+            );
+            if (accountResponse && accountResponse.error) {
+                throw new Error(accountResponse.error);
             } else {
-                res.json({ status: "success", message: "Account created successfully" })
+                res.json({
+                    status: "success",
+                    message: "Account created successfully",
+                });
             }
         } catch (e) {
-            res.status(500).json({ status: "failure", error: e.message })
+            res.status(500).json({ status: "failure", error: e.message });
         }
     }
 
     static async apiLoginAccount(req, res, next) {
         try {
-            const emailOrUsername = req.body.emailOrUsername
-            const password = req.body.password
-            const ipAddress = req.clientIp;
+            if (!req.sessionID) {
+                console.log("Fatal there is no session id");
+                res.json({ status: "failure" });
+            }
 
-            console.log("ip address: " + ipAddress)
-            const accountResponse = await accountsDAO.loginAccount( 
+            const emailOrUsername = req.body.emailOrUsername;
+            const password = req.body.password;
+            const ipAddress = req.clientIp;
+            const sessionId = req.sessionID;
+
+            console.log("ip address: " + ipAddress);
+            const accountResponse = await accountsDAO.loginAccount(
                 emailOrUsername,
                 password,
                 ipAddress,
-            )
-            console.log(emailOrUsername) // test
-            console.log(accountResponse.error) // test
-            if(accountResponse && accountResponse.error) {
-                throw new Error(accountResponse.error)
+                sessionId
+            );
+
+            console.log(emailOrUsername); // test
+            console.log(accountResponse.error); // test
+            if (accountResponse && accountResponse.error) {
+                throw new Error(accountResponse.error);
             } else {
-                if(req.session.userId)
-                {
-                    console.log("You're already logged in champ" + req.session.userId)
-                }
-                else
-                {
-                    //console.log(accountResponse._id) // test
-                    req.session.userId = accountResponse._id
-                    res.json({ status: "success" })
-                }
+                res.json({ status: "success" });
             }
         } catch (e) {
-            console.log("account not found") // test
-            res.status(401).json({ status: "failure", error: e.message })
-        } // could add an if statment to make sure the error has a string 
+            console.log("account not found"); // test
+            res.status(401).json({ status: "failure", error: e.message });
+        } // could add an if statment to make sure the error has a string
     }
 
-    static async apiGetUsername(req, res, next) {
+    static async apiGetUser(req, res, next) {
         try {
-            if(!req.session.userId)
-            {
-                res.status(401).json({ status: "Not Logged In", error: e.message })
-                return;
-            }
-
-            const emailOrUsername = req.body.emailOrUsername
-            const password = req.body.password
-
-            const accountResponse = await accountsDAO.loginAccount( 
-                emailOrUsername,
-                password
-            )
-            console.log(emailOrUsername) // test
-            console.log(accountResponse.error) // test
-            if(accountResponse && accountResponse.error) {
-                throw new Error(accountResponse.error)
+            if (
+                await accountsDAO.validateSessionId(req.sessionID, req.clientIp)
+            ) {
+                //console.log("We found the user account!");
+                res.send(true);
             } else {
-                if(req.session.userId)
-                {
-                    console.log("You're already logged in champ" + req.session.userId)
-                }
-                else
-                {
-                    //console.log(accountResponse._id) // test
-                    req.session.userId = accountResponse._id
-                    res.json({ status: "success" })
-                }
+                res.send(false);
             }
         } catch (e) {
-            console.log("account not found") // test
-            res.status(401).json({ status: "failure", error: e.message })
-        } // could add an if statment to make sure the error has a string 
+            console.log("account not found"); // test
+            res.status(401).json({ status: "failure", error: e.message });
+        } // could add an if statment to make sure the error has a string
+    }
+
+    static async apiLogOut(req, res, next) {
+        accountsDAO.updateUserAccount(req.sessionID, req.clientIp, {
+            currentSessionId: null,
+        });
+        req.session.destroy((err) => {
+            if (err) {
+                console.error("Error destroying session:", err);
+                res.status(500).send("Error logging out");
+            } else {
+                res.clearCookie("connect.sid"); // Clear the session cookie
+                res.redirect("/");
+            }
+        });
     }
 }

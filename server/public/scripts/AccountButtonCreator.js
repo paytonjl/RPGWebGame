@@ -1,44 +1,31 @@
-import { apiLink } from "./constants.js";
+const apiLink = "http://localhost:8000/api/v1/accounts/";
 class AccountButtonCreator {
     constructor(element) {
         this.accountButton = null;
+        this.isUserLoggedIn = null;
     }
 
-    createAccountButton() {
+    async createAccountButton() {
         const accountButtons = document.getElementsByClassName("AccountButton");
 
         if (accountButtons.length > 0 && accountButtons[0]) {
-            fetch(apiLink + "login", {
-                method: "POST",
-                //mode: "cors",
-                //credentials: 'include', // this causes error
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    emailOrUsername: emailOrUsername,
-                    password: password,
-                }),
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    document.getElementById("test2").innerText = data.error; //test
-                    if (data.status === "success") {
-                        // Handle successful login here
-                        document.getElementById("test").innerText =
-                            "Login successful!";
-                        window.location.href = "/";
-                    } else {
-                        // Handle error
-                        document.getElementById("test").innerText =
-                            data.error || "An error occurred."; // is this needed here or just need to throw a new error
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error:", error); //test
-                    document.getElementById("test").innerText =
-                        "An error occurred.";
-                });
+            try {
+                const isUserValid = await fetch(apiLink + "get_user", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "text/plain",
+                    },
+                    body: JSON.stringify({}),
+                }).then((response) => response.text());
+
+                if (isUserValid == "true") {
+                    this.isUserLoggedIn = true;
+                } else {
+                    this.isUserLoggedIn = false;
+                }
+            } catch (e) {
+                console.log(e);
+            }
 
             this.accountButton = accountButtons[0];
             this.createAndInsertButton();
@@ -48,9 +35,13 @@ class AccountButtonCreator {
         }
     }
 
-    createAndInsertButton() {
+    async createAndInsertButton() {
         const newButton = document.createElement("button");
-        newButton.textContent = "Account";
+        if (this.isUserLoggedIn == true) {
+            newButton.textContent = "Log Out";
+        } else {
+            newButton.textContent = "Log In";
+        }
 
         // Add any desired styles or attributes to the new button
         newButton.style.backgroundColor = "#007bff"; // Example color
@@ -60,5 +51,29 @@ class AccountButtonCreator {
 
         this.accountButton.innerHTML = "";
         this.accountButton.appendChild(newButton);
+        
+        newButton.addEventListener("click", this.handleClick.bind(this));
     }
+
+    async handleClick(event) {
+      // Remove the default button behavior
+      event.preventDefault();
+
+      if(this.isUserLoggedIn == true) {
+        try {
+          const isUserValid = await fetch(apiLink + "log_out", {
+              method: "POST",
+              headers: {
+                  "Content-Type": "text/plain",
+              },
+              body: JSON.stringify({}),
+          });
+      } catch (e) {
+          console.log(e);
+      }
+        window.location.href = '/';
+      } else {
+          window.location.href = '/login';
+      }
+  }
 }

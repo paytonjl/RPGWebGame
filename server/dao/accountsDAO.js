@@ -18,6 +18,46 @@ export default class AccountsDAO {
         }
     }
 
+
+    // User must have already logged in and have a session whose sessionId matches the currentSessionId field of their mongodb account
+    // currentSessionIpAddress must also match
+    static async updateUserAccount(sessionId, currentIpAddress, dataToUpdate)
+    {
+        try{
+
+            let userAccount = await accounts.findOne({currentSessionId: sessionId});
+            if(!userAccount)
+            {
+                console.log("Couldn't find user account associated with id " + sessionId);
+                return false;
+            }
+
+            if(!userAccount.currentSessionId || !userAccount.currentSessionIpAddress)
+            {
+                console.log("currentSessionId or currentSessionIpAddress missing for " + sessionId);
+                return false;
+            }
+
+            if( currentIpAddress != userAccount.currentSessionIpAddress ||
+                sessionId != userAccount.currentSessionId) {
+                console.log("Credentials don't match up");
+                return false;
+            }
+
+            const response = await accounts.updateOne({currentSessionId: sessionId }, 
+                { $set: { dataToUpdate } },
+                (err, result) => {
+                    if (err) {
+                        console.error("!!! Not found " + err);
+                    } else {
+                        console.log("Update success!")
+                    }
+                });
+        } catch (e) {
+            console.log(e.message)
+        }
+    } 
+
     static async createAccount(email, username, password1, password2){
         try {
             if (password1 != password2) {
@@ -44,8 +84,8 @@ export default class AccountsDAO {
                 email: email,
                 username: username,
                 password: hashedPassword,
-                lastSession: null,
-                lastIPAddress: null,
+                currentSessionId: null,
+                currentSessionIpAddress: null,
             }
             return await accounts.insertOne(accountDoc)
         } catch (e) {
@@ -54,7 +94,39 @@ export default class AccountsDAO {
         }
     }
     
-    static async loginAccount(emailOrUsername, password, currentIPAddress){
+    static async validateSessionId(sessionId, clientIpAddress)
+    {
+        try {
+            let userAccount = await accounts.findOne({currentSessionId: sessionId});
+            if(!userAccount)
+            {
+                console.log("Couldn't find user account associated with id " + sessionId);
+                return false;
+            }
+            
+            if(!userAccount.currentSessionId || !userAccount.currentSessionIpAddress)
+            {
+                console.log("currentSessionId or currentSessionIpAddress missing for " + sessionId);
+                return false;
+            }
+            
+            if( clientIpAddress == userAccount.currentSessionIpAddress &&
+                sessionId == userAccount.currentSessionId) {
+                //console.log("true");
+                return true;
+            }
+            else {
+                console.log("no match client IP: " + clientIpAddress + " last IP: " + userAccount.currentSessionIpAddress + " client session id " + sessionId + " last sessionId " + userAccount.currentSessionId );
+                return false;
+            }
+        } catch (e) {
+            console.log(e.message)
+        }
+
+        return false;
+    }
+
+    static async loginAccount(emailOrUsername, password, currentIpAddress, sessionId) {
         try {
             let match
             let loginAccountFilter = {email: emailOrUsername}
@@ -69,20 +141,31 @@ export default class AccountsDAO {
             } else {
                 match = await bcrypt.compare(password, account.password)
             }
+
             if (account){
                 if (match) {
                     console.log("Found the Account") // test
-                    if(currentIPAddress != null)
+
+                    if(currentIpAddress != null)
                     {
+                        // Set the user's account to recognize the previously created session and IP address combo    
                         try {
-                            const result = await accounts.updateOne(
-                                loginAccountFilter,
-                                { $set: {lastIPAddress: currentIPAddress}}
-                            );
-                            
-                            console.log(`Updated ${result.modifiedCount} documents`);
+                                await accounts.updateOne(loginAccountFilter, 
+                                    { $set: { currentSessionId: sessionId } },
+                                    (err, result) => {
+                                        if (err) {
+                                            console.error("Account Not found " + err);
+                                        }
+                                    });
+                                await accounts.updateOne(loginAccountFilter, 
+                                    { $set: { currentSessionIpAddress: currentIpAddress } },
+                                    (err, result) => {
+                                        if (err) {
+                                            console.error("Account Not found " + err);
+                                        }
+                                    });
                         } catch (e) {
-                            console.log("Unable to set last IP address") // test 
+                            console.log(e.message)
                         }
                     }
                     else
@@ -90,7 +173,7 @@ export default class AccountsDAO {
                         console.log("No ip address to log");
                     }
 
-                    return account
+                    return account;
                 } else {
                     throw new Error("incorrect password")
                 }
@@ -103,6 +186,5 @@ export default class AccountsDAO {
             console.error(`unable to login to account: ${e}`) //test
             return { error: e }
         }
-        
     }
 }
