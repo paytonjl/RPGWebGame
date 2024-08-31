@@ -25,6 +25,7 @@ document.getElementById("loginForm").addEventListener("submit", function(event) 
         if (data.status === "success") {
             // Handle successful login here
             document.getElementById('test').innerText = "Login successful!";
+            window.location.href = '/';
         } else {
             // Handle error
             document.getElementById('test').innerText = data.error || "An error occurred."; // is this needed here or just need to throw a new error

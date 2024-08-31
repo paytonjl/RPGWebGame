@@ -14,7 +14,7 @@ dotenv.config()
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const port = 3000
+const port = 8000
 
 const app = express()
 app.use(express.json())
