@@ -1,33 +1,33 @@
-const apiLink = "http://localhost:8000/api/v1/accounts/";
-class AccountButtonCreator {
+
+// Displays the users current progress through the main story of the adventure
+// When clicked, will bring the user to the part of the adventure that they last
+// left off
+const apiLink = "http://localhost:8000/api/v1/adventure/";
+
+class AdventureProgressButtonCreator {
     constructor(element) {
-        this.accountButton = null;
-        this.isUserLoggedIn = null;
+        this.storyStage = "Beginning";
     }
 
-    async createAccountButton() {
-        const accountButtons = document.getElementsByClassName("AccountButton");
+    async createProgressButton() {
+        const progressButton = document.getElementsByClassName("AdventureProgressButton");
 
-        if (accountButtons.length > 0 && accountButtons[0]) {
+        if (progressButton.length > 0 && progressButton[0]) {
             try {
-                const isUserValid = await fetch(apiLink + "get_user", {
+                const storyProgress = await fetch(apiLink + "get_adventure_progress", {
                     method: "POST",
                     headers: {
-                        "Content-Type": "text/plain",
+                        "Content-Type": "application/json",
                     },
                     body: JSON.stringify({}),
-                }).then((response) => response.text());
+                }).then((response) => response.json());
 
-                if (isUserValid == "true") {
-                    this.isUserLoggedIn = true;
-                } else {
-                    this.isUserLoggedIn = false;
-                }
+                console.log(storyProgress)
             } catch (e) {
                 console.log(e);
             }
 
-            this.accountButton = accountButtons[0];
+            this.progressButton = progressButton[0];
             this.createAndInsertButton();
         } else {
             console.log("No account button to create");
@@ -56,24 +56,22 @@ class AccountButtonCreator {
     }
 
     async handleClick(event) {
-        // Remove the default button behavior
+      // Remove the default button behavior
         event.preventDefault();
 
-        if(this.isUserLoggedIn == true) {
-            try {
-                const isUserValid = await fetch(apiLink + "log_out", {
-                method: "POST",
+        try {
+            let storyProgress = await fetch(apiLink + "get_adventure_progress", {
+                method: "GET",
                 headers: {
-                    "Content-Type": "text/plain",
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({}),
             });
         } catch (e) {
-            console.log(e);
+                console.log(e);
         }
-            window.location.href = '/';
-        } else {
-            window.location.href = '/login';
-        }
+
+
     }
+
 }

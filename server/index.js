@@ -2,11 +2,13 @@
 import mongodb, { Collection } from "mongodb"
 import dotenv from "dotenv"
 import AccountsDAO from "./dao/accountsDAO.js"
+import StoryDAO from "./dao/storyDAO.js"
 import session from "express-session" 
 import MongoStore from "connect-mongo" 
 import express from "express"
 import requestIp from "request-ip"
-import accounts from "./api/accounts.route.js"
+import accountsRouter from "./api/accounts.route.js"
+import adventureRouter from "./api/adventure.route.js"
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { join } from 'path';
@@ -53,23 +55,9 @@ try {
     console.error("Failed to initialize MongoStore:", error);
 }
 
-export function redirectToHome()
-{
-
-    res.sendFile(join(__dirname, "/public/views/index.html"));
-    if(req.session.userId == undefined)
-    {
-        console.log("user not logged in");
-    }
-    else
-    {
-        console.log("user logged in");
-    }
-    console.log("user id " + req.session.userId)
-}
-
 //routes
-app.use("/api/v1/accounts", accounts)
+app.use("/api/v1/accounts", accountsRouter)
+app.use("/api/v1/adventure", adventureRouter)
 app.use(express.static(__dirname))
 app.get("/", (req, res) => {
     res.sendFile(join(__dirname, "/public/views/index.html"));
@@ -79,18 +67,14 @@ app.get('/some-route', (req, res) => {
     res.redirect('/');
 });
 
-app.get('/redirect-to-home', (req, res) => {
-    res.redirect('/');
-});
-
 app.get("/login", (req, res) => {
     res.sendFile(join(__dirname, "/public/views/login.html"));
 });
 app.get("/create_account", (req, res) => {
     res.sendFile(join(__dirname, "/public/views/create_account.html"));
 });
-app.use("*", (req, res) => res.status(400).json({error: "Page not found"}))
 
+app.use("*", (req, res) => res.status(400).json({error: "Page not found"}))
 
 MongoClient.connect(
     uri,
@@ -105,6 +89,7 @@ MongoClient.connect(
     .then(async client =>{
 
         await AccountsDAO.injectDB(client)
+        await StoryDAO.injectDB(client)
 
         app.listen(port, () => {
             console.log(`listening on port ${port}`)

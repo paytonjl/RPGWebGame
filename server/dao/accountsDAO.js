@@ -1,24 +1,12 @@
 import mongodb from "mongodb"
 import dotenv from "dotenv"
 import bcrypt from "bcrypt"
-//const ObjectID = mongodb.ObjectID not using it i think this will allow us to work with object ids that are auto created in the object
+import BasicDAO from "./basicDAO.js"
 
 let accounts
 const saltRounds = process.env["saltRounds"]
 
-export default class AccountsDAO {
-    static async injectDB(conn) {
-        if (accounts) {
-            return
-        }
-        try { 
-            accounts = await conn.db("MyRPG").collection("accounts")
-        } catch (e) {
-            console.error(`Unable to establish collection handles in userDAO: ${e}`)
-        }
-    }
-
-
+export default class AccountsDAO extends BasicDAO {
     // User must have already logged in and have a session whose sessionId matches the currentSessionId field of their mongodb account
     // currentSessionIpAddress must also match
     static async updateUserAccount(sessionId, currentIpAddress, dataToUpdate)
@@ -56,7 +44,7 @@ export default class AccountsDAO {
         } catch (e) {
             console.log(e.message)
         }
-    } 
+    }
 
     static async createAccount(email, username, password1, password2){
         try {
@@ -92,38 +80,6 @@ export default class AccountsDAO {
             console.error(`unable to create account: ${e}`) //test
             return { error: e }
         }
-    }
-    
-    static async validateSessionId(sessionId, clientIpAddress)
-    {
-        try {
-            let userAccount = await accounts.findOne({currentSessionId: sessionId});
-            if(!userAccount)
-            {
-                console.log("Couldn't find user account associated with id " + sessionId);
-                return false;
-            }
-            
-            if(!userAccount.currentSessionId || !userAccount.currentSessionIpAddress)
-            {
-                console.log("currentSessionId or currentSessionIpAddress missing for " + sessionId);
-                return false;
-            }
-            
-            if( clientIpAddress == userAccount.currentSessionIpAddress &&
-                sessionId == userAccount.currentSessionId) {
-                //console.log("true");
-                return true;
-            }
-            else {
-                console.log("no match client IP: " + clientIpAddress + " last IP: " + userAccount.currentSessionIpAddress + " client session id " + sessionId + " last sessionId " + userAccount.currentSessionId );
-                return false;
-            }
-        } catch (e) {
-            console.log(e.message)
-        }
-
-        return false;
     }
 
     static async loginAccount(emailOrUsername, password, currentIpAddress, sessionId) {
