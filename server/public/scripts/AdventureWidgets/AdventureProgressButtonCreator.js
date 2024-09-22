@@ -11,10 +11,10 @@ class AdventureProgressButtonCreator {
 
     async createProgressButton() {
         const progressButton = document.getElementsByClassName("AdventureProgressButton");
-
+        console.log("casdfa")
         if (progressButton.length > 0 && progressButton[0]) {
             try {
-                const storyProgress = await fetch(apiLink + "get_adventure_progress", {
+                const storyProgress = await fetch(apiLink + "get_active_stories", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -28,7 +28,7 @@ class AdventureProgressButtonCreator {
             }
 
             this.progressButton = progressButton[0];
-            this.createAndInsertButton();
+            //this.createAndInsertButton();
         } else {
             console.log("No account button to create");
             return;
@@ -49,10 +49,10 @@ class AdventureProgressButtonCreator {
         newButton.style.padding = "5px 10px";
         newButton.style.borderRadius = "5px";
 
-        this.accountButton.innerHTML = "";
-        this.accountButton.appendChild(newButton);
+        //this.accountButton.innerHTML = "";
+        //this.accountButton.appendChild(newButton);
         
-        newButton.addEventListener("click", this.handleClick.bind(this));
+        //newButton.addEventListener("click", this.handleClick.bind(this));
     }
 
     async handleClick(event) {
@@ -60,7 +60,7 @@ class AdventureProgressButtonCreator {
         event.preventDefault();
 
         try {
-            let storyProgress = await fetch(apiLink + "get_adventure_progress", {
+            let storyProgress = await fetch(apiLink + "get_active_stories", {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",

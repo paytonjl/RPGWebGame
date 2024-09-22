@@ -26,11 +26,6 @@ export default class BasicDAO {
             console.error(`Unable to establish collection handles in userDAO: ${e}`)
         }
     }
-    
-    // Used to return the mongoDatabase object. May return null
-    static async returnDB() {
-        return mongoDatabase
-    }
 
     /** 
      * Is the user currently logged into an account in the database?
@@ -76,6 +71,7 @@ export default class BasicDAO {
     }
 
     // Gets the value of the key matching dataToFetch in the the user's account.
+    // Returns the entire user document if it is not found
     static async fetchFromAccount(sessionId, currentIpAddress, dataToFetch)
     {
         try{
@@ -100,7 +96,7 @@ export default class BasicDAO {
             }
 
             const response = await mongoDatabase.findOne({currentSessionId: sessionId},
-                { projection: {"username": 1} },
+                { projection: {dataToFetch: 1} },
                 (err, result) => {
                     if (err) {
                         console.error("!!! Not found " + err);

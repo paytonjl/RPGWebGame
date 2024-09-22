@@ -1,17 +1,33 @@
-import storyDAO from "../dao/storyDAO.js";
+import storyDAO from "../dao/gameDAO.js";
+import mainStoryManager from "../backend_gameplay/adventure_manager.js"
 
 export default class AdventureController {
-    
-
-    static initializeMainStory()
+    static async apiInitializeNewMainStory(req, res, next)
     {
+        try {
+            if (!req.sessionID) {
+                console.log("Fatal there is no session id");
+                res.json({ status: "failure" });
+            }
 
-    }
+            const sessionId = req.sessionID;
+            const ipAddress = req.clientIp;
 
+            let mainStoryState = await mainStoryManager.initializeNewMainStoryJson()
 
-    static async initializeNewPlayerStory()
-    {
-        
+            const username = await storyDAO.updateUserAccount(
+                sessionId,
+                ipAddress,
+                mainStoryState
+            );
+            if (username && username.error) {
+                throw new Error(username.error);
+            } else {
+                res.json({ status: "success" });
+            }
+        } catch (e) {
+            res.status(500).json({ status: "failure", error: e.message });
+        }
     }
 
 
@@ -28,7 +44,7 @@ export default class AdventureController {
             const username = await storyDAO.fetchFromAccount(
                 sessionId,
                 ipAddress,
-                "username"
+                "currentLevel"
             );
             if (username && username.error) {
                 throw new Error(username.error);
@@ -39,7 +55,17 @@ export default class AdventureController {
         } catch (e) {
             res.status(500).json({ status: "failure", error: e.message });
         }
-
-        console.log("Breakpoint")
     }
+
+    // Will eventually return a collection of stories along with their progress
+    // Stubbed for now to give front end some data
+    static async apiGetActiveStories(req, res, next) {
+        let stubbedStoryProgress = await mainStoryManager.initializeNewMainStoryJson()
+        const stubbedReturn = {
+            "MainAdventureProgress" : stubbedStoryProgress
+        }
+
+        res.json(stubbedReturn)
+    }
+
 }

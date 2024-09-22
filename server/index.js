@@ -2,7 +2,7 @@
 import mongodb, { Collection } from "mongodb"
 import dotenv from "dotenv"
 import AccountsDAO from "./dao/accountsDAO.js"
-import StoryDAO from "./dao/storyDAO.js"
+import GameDAO from "./dao/gameDAO.js"
 import session from "express-session" 
 import MongoStore from "connect-mongo" 
 import express from "express"
@@ -89,7 +89,7 @@ MongoClient.connect(
     .then(async client =>{
 
         await AccountsDAO.injectDB(client)
-        await StoryDAO.injectDB(client)
+        await GameDAO.injectDB(client)
 
         app.listen(port, () => {
             console.log(`listening on port ${port}`)
