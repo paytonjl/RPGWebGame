@@ -1,11 +1,14 @@
 import mongodb from "mongodb"
 //const ObjectID = mongodb.ObjectID not using it i think this will allow us to work with object ids that are auto created in the object
 
-let mongoDatabase = null
-
 // Basic class for accessing the MongoDatabase. This is meant to be extended by 
 // more specific classes
 export default class BasicDAO {
+    
+    constructor(client) {
+        this.mongoDatabase = null;
+    }
+    
     /**
      * The function injectDB asynchronously establishes a connection to a MongoDB
      * database collection for an RPG game.
@@ -16,12 +19,12 @@ export default class BasicDAO {
      * @returns If the `mongoDatabase` variable is already defined, the function will
      * return without doing anything.
      */
-    static async injectDB(client) {
-        if (mongoDatabase) {
+    async injectDB(client) {
+        if (this.mongoDatabase) {
             return
         }
         try { 
-            mongoDatabase = await client.db("MyRPG").collection("accounts")
+            this.mongoDatabase = await client.db("MyRPG").collection("accounts")
         } catch (e) {
             console.error(`Unable to establish collection handles in userDAO: ${e}`)
         }
@@ -37,10 +40,10 @@ export default class BasicDAO {
      * @returns true when user's IP address and session ID match a user account
      * in the database
      * */ 
-    static async validateSessionId(sessionId, clientIpAddress)
+    async validateSessionId(sessionId, clientIpAddress)
     {
         try {
-            let userAccount = await mongoDatabase.findOne({currentSessionId: sessionId});
+            let userAccount = await this.mongoDatabase.findOne({currentSessionId: sessionId});
 
             if(!userAccount)
             {
@@ -72,10 +75,10 @@ export default class BasicDAO {
 
     // Gets the value of the key matching dataToFetch in the the user's account.
     // Returns the entire user document if it is not found
-    static async fetchFromAccount(sessionId, currentIpAddress, dataToFetch)
+    async fetchFromAccount(sessionId, currentIpAddress, dataToFetch)
     {
         try{
-            let userAccount = await mongoDatabase.findOne({currentSessionId: sessionId});
+            let userAccount = await this.mongoDatabase.findOne({currentSessionId: sessionId});
             
             if(!userAccount)
             {
@@ -95,13 +98,13 @@ export default class BasicDAO {
                 return false;
             }
 
-            const response = await mongoDatabase.findOne({currentSessionId: sessionId},
-                { projection: {dataToFetch: 1} },
+            const response = await this.mongoDatabase.findOne({currentSessionId: sessionId},
+                { projection: {"mainStoryState.currentLevel": 1} },
                 (err, result) => {
                     if (err) {
                         console.error("!!! Not found " + err);
                     } else {
-                        console.log("username is " + response)
+                        console.log("username is " + result)
                     }
                 });
 
@@ -113,10 +116,10 @@ export default class BasicDAO {
 
     // User must have already logged in and have a session whose sessionId matches the currentSessionId field of their mongodb account
     // currentSessionIpAddress must also match
-    static async updateUserAccount(sessionId, currentIpAddress, dataToUpdate)
+    static async updateUserAccount(sessionId, currentIpAddress, command)
     {
         try{
-            let userAccount = await mongoDatabase.findOne({currentSessionId: sessionId});
+            let userAccount = await this.mongoDatabase.findOne({currentSessionId: sessionId});
 
             if(!userAccount)
             {
@@ -136,8 +139,8 @@ export default class BasicDAO {
                 return false;
             }
 
-            const response = await mongoDatabase.updateOne({currentSessionId: sessionId }, 
-                { $set: { dataToUpdate } },
+            const response = await this.mongoDatabase.updateOne({currentSessionId: sessionId }, 
+                command,
                 (err, result) => {
                     if (err) {
                         console.error("Not found" + err);

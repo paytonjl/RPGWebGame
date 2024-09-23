@@ -11,10 +11,9 @@ class AdventureProgressButtonCreator {
 
     async createProgressButton() {
         const progressButton = document.getElementsByClassName("AdventureProgressButton");
-        console.log("casdfa")
         if (progressButton.length > 0 && progressButton[0]) {
             try {
-                const storyProgress = await fetch(apiLink + "get_active_stories", {
+                const storyProgress = await fetch(apiLink + "get_adventure_progress", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

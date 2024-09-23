@@ -2,14 +2,20 @@ import accountsDAO from "../dao/accountsDAO.js";
 import requestIp from "request-ip";
 
 export default class AccountsController {
-    static async apiCreateAccount(req, res, next) {
+    // Must be given a data access object used for accessing the user accounts
+    // in the database
+    constructor(accountsDAO) {
+        this.accountsDAO = accountsDAO;
+    }
+
+    async apiCreateAccount(req, res, next) {
         try {
             const email = req.body.email;
             const username = req.body.username;
             const password1 = req.body.password1;
             const password2 = req.body.password2;
 
-            const accountResponse = await accountsDAO.createAccount(
+            const accountResponse = await this.accountsDAO.createAccount(
                 email,
                 username,
                 password1,
@@ -28,7 +34,7 @@ export default class AccountsController {
         }
     }
 
-    static async apiLoginAccount(req, res, next) {
+    async apiLoginAccount(req, res, next) {
         try {
             if (!req.sessionID) {
                 console.log("Fatal there is no session id");
@@ -41,7 +47,7 @@ export default class AccountsController {
             const sessionId = req.sessionID;
 
             console.log("ip address: " + ipAddress);
-            const accountResponse = await accountsDAO.loginAccount(
+            const accountResponse = await this.accountsDAO.loginAccount(
                 emailOrUsername,
                 password,
                 ipAddress,
@@ -61,10 +67,10 @@ export default class AccountsController {
         } // could add an if statment to make sure the error has a string
     }
 
-    static async apiGetUser(req, res, next) {
+    async apiGetUser(req, res, next) {
         try {
             if (
-                await accountsDAO.validateSessionId(req.sessionID, req.clientIp)
+                await this.accountsDAO.validateSessionId(req.sessionID, req.clientIp)
             ) {
                 //console.log("We found the user account!");
                 res.send(true);
@@ -77,8 +83,8 @@ export default class AccountsController {
         } // could add an if statment to make sure the error has a string
     }
 
-    static async apiLogOut(req, res, next) {
-        accountsDAO.updateUserAccount(req.sessionID, req.clientIp, {
+    async apiLogOut(req, res, next) {
+        this.accountsDAO.updateUserAccount(req.sessionID, req.clientIp, {
             currentSessionId: null,
         });
         req.session.destroy((err) => {

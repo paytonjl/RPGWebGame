@@ -7,13 +7,15 @@ import session from "express-session"
 import MongoStore from "connect-mongo" 
 import express from "express"
 import requestIp from "request-ip"
-import accountsRouter from "./api/accounts.route.js"
-import adventureRouter from "./api/adventure.route.js"
+import AccountsRouterInitializer from "./api/accounts.route.js"
+import AdventureRoutesInitializer from "./api/adventure.route.js"
+import AdventureController from "./api/adventure.controller.js"
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { join } from 'path';
+import AccountsController from "./api/accounts.controller.js"
 
-dotenv.config()
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -31,7 +33,7 @@ const mongoStore = new MongoStore({
     mongoUrl: process.env.MongoDB_API_KEY,
     //Collection: "Sessions", // thought one of these would work for setting my session folder name in the data base
     //collection: "Sessions",
-})
+});
 
 // configure session's middleware here
 try {
@@ -55,27 +57,6 @@ try {
     console.error("Failed to initialize MongoStore:", error);
 }
 
-//routes
-app.use("/api/v1/accounts", accountsRouter)
-app.use("/api/v1/adventure", adventureRouter)
-app.use(express.static(__dirname))
-app.get("/", (req, res) => {
-    res.sendFile(join(__dirname, "/public/views/index.html"));
-});
-app.get('/some-route', (req, res) => {
-    console.log('Reached redirect point');
-    res.redirect('/');
-});
-
-app.get("/login", (req, res) => {
-    res.sendFile(join(__dirname, "/public/views/login.html"));
-});
-app.get("/create_account", (req, res) => {
-    res.sendFile(join(__dirname, "/public/views/create_account.html"));
-});
-
-app.use("*", (req, res) => res.status(400).json({error: "Page not found"}))
-
 MongoClient.connect(
     uri,
     {
@@ -83,15 +64,50 @@ MongoClient.connect(
         wtimeoutMS: 2500,
     })
     .catch(err => {
-        console.error(err.stack)
-        process.exit(1)
+        console.error(err.stack);
+        process.exit(1);
     })
     .then(async client =>{
 
-        await AccountsDAO.injectDB(client)
-        await GameDAO.injectDB(client)
+        const accountsDAO = new AccountsDAO();
+        const gameDAO = new GameDAO();
+        
+
+        await accountsDAO.injectDB(client)
+        await gameDAO.injectDB(client);
+
+        const accountsController = new AccountsController(accountsDAO);
+        const accountsRouterInitializer = new AccountsRouterInitializer(accountsController);
+
+        const adventureController = new AdventureController(gameDAO);
+        const adventureRoutesInitializer = new AdventureRoutesInitializer(adventureController);
+        initializeRoutes(accountsRouterInitializer.getaccountsRouter(), adventureRoutesInitializer.getAdventureRouter());
 
         app.listen(port, () => {
             console.log(`listening on port ${port}`)
         })
     })
+
+function initializeRoutes(accountsRouter, adventureRouter)
+{
+    //routes
+    app.use("/api/v1/accounts", accountsRouter);
+    app.use("/api/v1/adventure", adventureRouter);
+    app.use(express.static(__dirname));
+    app.get("/", (req, res) => {
+        res.sendFile(join(__dirname, "/public/views/index.html"));
+    });
+    app.get('/some-route', (req, res) => {
+        console.log('Reached redirect point');
+        res.redirect('/');
+    });
+
+    app.get("/login", (req, res) => {
+        res.sendFile(join(__dirname, "/public/views/login.html"));
+    });
+    app.get("/create_account", (req, res) => {
+        res.sendFile(join(__dirname, "/public/views/create_account.html"));
+    });
+
+    app.use("*", (req, res) => res.status(400).json({error: "Page not found"}));
+}

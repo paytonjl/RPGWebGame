@@ -1,10 +1,29 @@
 import express from "express"
 import AdventureCtrl from "./adventure.controller.js"
 
-const adventureRouter = express.Router()
+// This class handles initializing the adventure router as well as binding the
+// adventure controller to it. 
+export default class adventureRouterInitializer {
+    constructor(adventureController) {
+        this.adventureController = adventureController;
+        this.adventureRouter = express.Router();
 
-//adventureRouter.route("/get_adventure_progress").post(AdventureCtrl.apiGetStoryProgress)
-adventureRouter.route("/get_adventure_progress").post(AdventureCtrl.apiInitializeNewMainStory)
-adventureRouter.route("/get_active_stories").post(AdventureCtrl.apiGetActiveStories)
+        // Bind controller methods to router routes
+        this.bindRoutes();
+    }
 
-export default adventureRouter
+    // In order for the router to actually call the method function of 
+    // this.adventureController, you need to bind the actual instance of the 
+    // object to it. If you don't do that it will call the apiGetStoryProgress
+    // method as if it was static and then the function wouldn't have access
+    // to the gameDAO it was given. Javascript is weird.
+    bindRoutes() {
+        this.adventureRouter.route("/get_adventure_progress").post(this.adventureController.apiGetStoryProgress.bind(this.adventureController));
+        this.adventureRouter.route("/initialize_new_main_adventure").post(this.adventureController.apiInitializeNewMainStory.bind(this.adventureController));
+        this.adventureRouter.route("/get_active_stories").post(this.adventureController.apiGetActiveStories.bind(this.adventureController));
+    }
+
+    getAdventureRouter() {
+        return this.adventureRouter;
+    }
+} 

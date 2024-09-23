@@ -1,10 +1,29 @@
 import express from "express"
 import AccountsCtrl from "./accounts.controller.js"
 
-const router = express.Router()
+// This class handles initializing the adventure router as well as binding the
+// adventure controller to it. 
+export default class accountsRouterInitializer {
+    constructor(accountsController) {
+        this.accountsController = accountsController;
+        this.accountsRouter = express.Router();
 
-router.route("/login").post(AccountsCtrl.apiLoginAccount)
-router.route("/create_account").post(AccountsCtrl.apiCreateAccount)
-router.route("/get_user").post(AccountsCtrl.apiGetUser)
+        // Bind controller methods to router routes
+        this.bindRoutes();
+    }
 
-export default router
+    // In order for the router to actually call the method function of 
+    // this.accountsController, you need to bind the actual instance of the 
+    // object to it. If you don't do that it will call the api 
+    // methods as if it was static and then the function wouldn't have access
+    // to the object's member variables. 
+    bindRoutes() {
+        this.accountsRouter.route("/login").post(this.accountsController.apiLoginAccount.bind(this.accountsController));
+        this.accountsRouter.route("/create_account").post(this.accountsController.apiCreateAccount.bind(this.accountsController));
+        this.accountsRouter.route("/get_user").post(this.accountsController.apiGetUser.bind(this.accountsController));
+    }
+
+    getaccountsRouter() {
+        return this.accountsRouter;
+    }
+} 

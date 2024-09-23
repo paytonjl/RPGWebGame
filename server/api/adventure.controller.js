@@ -1,8 +1,14 @@
-import storyDAO from "../dao/gameDAO.js";
+import GameDAO from "../dao/gameDAO.js";
 import mainStoryManager from "../backend_gameplay/adventure_manager.js"
 
 export default class AdventureController {
-    static async apiInitializeNewMainStory(req, res, next)
+    // Must be given a data access object used for accessing the game state
+    // in the user's account in the database
+    constructor(gameDAO) {
+        this.gameDAO = gameDAO;
+    }
+
+    async apiInitializeNewMainStory(req, res, next)
     {
         try {
             if (!req.sessionID) {
@@ -15,10 +21,10 @@ export default class AdventureController {
 
             let mainStoryState = await mainStoryManager.initializeNewMainStoryJson()
 
-            const username = await storyDAO.updateUserAccount(
+            const username = await this.gameDAO.updateUserAccount(
                 sessionId,
                 ipAddress,
-                mainStoryState
+                ({ $set: { mainStoryState } })
             );
             if (username && username.error) {
                 throw new Error(username.error);
@@ -31,7 +37,7 @@ export default class AdventureController {
     }
 
 
-    static async apiGetStoryProgress(req, res, next) {
+    async apiGetStoryProgress(req, res, next) {
         try {
             if (!req.sessionID) {
                 console.log("Fatal there is no session id");
@@ -41,15 +47,15 @@ export default class AdventureController {
             const sessionId = req.sessionID;
             const ipAddress = req.clientIp;
 
-            const username = await storyDAO.fetchFromAccount(
+            const username = await this.gameDAO.fetchFromAccount(
                 sessionId,
                 ipAddress,
-                "currentLevel"
+                "mainStoryState.currentLevel"
             );
             if (username && username.error) {
                 throw new Error(username.error);
             } else {
-                console.log(username)
+                console.log(username);
                 res.json(username);
             }
         } catch (e) {
@@ -59,13 +65,13 @@ export default class AdventureController {
 
     // Will eventually return a collection of stories along with their progress
     // Stubbed for now to give front end some data
-    static async apiGetActiveStories(req, res, next) {
-        let stubbedStoryProgress = await mainStoryManager.initializeNewMainStoryJson()
+    async apiGetActiveStories(req, res, next) {
+        let stubbedStoryProgress = await mainStoryManager.initializeNewMainStoryJson();
         const stubbedReturn = {
             "MainAdventureProgress" : stubbedStoryProgress
         }
 
-        res.json(stubbedReturn)
+        res.json(stubbedReturn);
     }
 
 }
