@@ -1,0 +1,31 @@
+#adventure_menu{
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+    justify-content: right;
+    height: calc(100vh - 150px);
+    width: 95%;
+    background-color: burlywood;
+    border-style: solid;
+    border-radius: 5px;
+    border-color: black;
+    margin: 1%;
+    padding-bottom: 1%;
+}
+
+#adventure_menu a{
+    border-style: solid;
+    border-color: black;
+    background-color: rgb(19, 78, 38);
+    padding-left: 10%;
+    padding-top: 1%;
+    padding-bottom: 1%;
+    border-radius: 10px;
+    text-decoration: none;
+    color: black;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    box-sizing: border-box;
+    margin-top: 1%;
+    margin-left: 20%;
+    margin-right: 1%;
+}
