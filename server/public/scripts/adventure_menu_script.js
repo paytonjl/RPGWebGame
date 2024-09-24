@@ -1,4 +1,4 @@
-const apiLink = "http://localhost:8000/api/v1/accounts/" // this could change based on what the backend needs
+const apiLink = "http://localhost:8000/api/v1/adventure/"
 
 const adventure_menu = document.getElementById("adventure_menu");
 

@@ -74,4 +74,11 @@ export default class AdventureController {
         res.json(stubbedReturn);
     }
 
+    async apiPossibleAdventures(req, res, next){
+        res.json({
+            title: "Begin Main Adventure",
+            link: "#"
+        })
+    }
+
 }

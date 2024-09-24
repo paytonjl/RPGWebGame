@@ -21,6 +21,7 @@ export default class adventureRouterInitializer {
         this.adventureRouter.route("/get_adventure_progress").post(this.adventureController.apiGetStoryProgress.bind(this.adventureController));
         this.adventureRouter.route("/initialize_new_main_adventure").post(this.adventureController.apiInitializeNewMainStory.bind(this.adventureController));
         this.adventureRouter.route("/get_active_stories").post(this.adventureController.apiGetActiveStories.bind(this.adventureController));
+        this.adventureRouter.route("/possible_adventures").get(this.adventureController.apiPossibleAdventures.bind(this.adventureController));
     }
 
     getAdventureRouter() {
