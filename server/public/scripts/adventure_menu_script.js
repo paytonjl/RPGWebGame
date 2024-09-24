@@ -11,12 +11,13 @@ fetch((apiLink + "possible_adventures"),{
 })
 .then(res => res.json())
 .then(data => { //testing will need to create a loop to go through an array of these
-    const linkElement = document.createElement('a');
-    linkElement.href = data.link;// needs the backend to have the same object name link
-    linkElement.textContent = data.title; // need the backend to have the same object name title
-
-    adventure_menu.appendChild(linkElement);
-
+    data.forEach(element => {
+        const linkElement = document.createElement('a');
+        linkElement.href = element.link;// needs the backend to have the same object name link
+        linkElement.textContent = element.title; // need the backend to have the same object name title
+    
+        adventure_menu.appendChild(linkElement);
+    });
 })
 .catch((error) => {
     console.error('Error:', error); //test

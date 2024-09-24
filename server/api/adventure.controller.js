@@ -75,10 +75,14 @@ export default class AdventureController {
     }
 
     async apiPossibleAdventures(req, res, next){
-        res.json({
+        res.json([{
             title: "Begin Main Adventure",
             link: "#"
-        })
+        },
+        {
+            title: "Begin Greg's Adventure",
+            link: "#"
+        }])
     }
 
 }
