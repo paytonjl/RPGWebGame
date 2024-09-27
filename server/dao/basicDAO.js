@@ -73,9 +73,10 @@ export default class BasicDAO {
         return false;
     }
 
-    // Gets the value of the key matching dataToFetch in the the user's account.
-    // Returns the entire user document if it is not found
-    async fetchFromAccount(sessionId, currentIpAddress, dataToFetch)
+    // Gets the value of the key matching dataFetchCommand in the the user's account.
+    // Returns just the user's account ID if not found. dataFetchCommand must be the form
+    // { projection: { "dataToFind.subDataToFind": 1} }
+    async fetchFromAccount(sessionId, currentIpAddress, dataFetchCommand)
     {
         try{
             let userAccount = await this.mongoDatabase.findOne({currentSessionId: sessionId});
@@ -97,26 +98,18 @@ export default class BasicDAO {
                 console.log("Credentials don't match up");
                 return false;
             }
-
             const response = await this.mongoDatabase.findOne({currentSessionId: sessionId},
-                { projection: {"mainStoryState.currentLevel": 1} },
-                (err, result) => {
-                    if (err) {
-                        console.error("!!! Not found " + err);
-                    } else {
-                        console.log("username is " + result)
-                    }
-                });
+                dataFetchCommand);
 
-            return response 
+            return response;
         } catch (e) {
-            console.log(e.message)
+            console.log(e.message);
         }
     }
 
     // User must have already logged in and have a session whose sessionId matches the currentSessionId field of their mongodb account
     // currentSessionIpAddress must also match
-    static async updateUserAccount(sessionId, currentIpAddress, command)
+    async updateUserAccount(sessionId, currentIpAddress, command)
     {
         try{
             let userAccount = await this.mongoDatabase.findOne({currentSessionId: sessionId});

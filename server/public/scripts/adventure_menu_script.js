@@ -3,8 +3,8 @@ const apiLink = "http://localhost:8000/api/v1/adventure/"
 const adventure_menu = document.getElementById("adventure_menu");
 
 //need the backend to have the right apilink and fucntion named possible_adventures
-fetch((apiLink + "possible_adventures"),{
-    method: 'GET',
+fetch((apiLink + "get_active_stories"),{
+    method: 'POST',
     headers: {
         'Content-Type': 'application/json',
     },

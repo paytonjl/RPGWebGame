@@ -9,5 +9,6 @@ export default class GameDAO extends BasicDAO {
     constructor() {
         super();
     }
+
     
 }

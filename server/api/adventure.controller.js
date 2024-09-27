@@ -1,4 +1,4 @@
-import GameDAO from "../dao/gameDAO.js";
+import gameDAO from "../dao/gameDAO.js";
 import mainStoryManager from "../backend_gameplay/adventure_manager.js"
 
 export default class AdventureController {
@@ -8,7 +8,7 @@ export default class AdventureController {
         this.gameDAO = gameDAO;
     }
 
-    async apiInitializeNewMainStory(req, res, next)
+    async apiInitializeNewUserStories(req, res, next)
     {
         try {
             if (!req.sessionID) {
@@ -19,12 +19,12 @@ export default class AdventureController {
             const sessionId = req.sessionID;
             const ipAddress = req.clientIp;
 
-            let mainStoryState = await mainStoryManager.initializeNewMainStoryJson()
+            const storyStates = mainStoryManager.initializeNewUserStories();
 
             const username = await this.gameDAO.updateUserAccount(
                 sessionId,
                 ipAddress,
-                ({ $set: { mainStoryState } })
+                ({ $set: { storyStates } })
             );
             if (username && username.error) {
                 throw new Error(username.error);
@@ -66,12 +66,24 @@ export default class AdventureController {
     // Will eventually return a collection of stories along with their progress
     // Stubbed for now to give front end some data
     async apiGetActiveStories(req, res, next) {
-        let stubbedStoryProgress = await mainStoryManager.initializeNewMainStoryJson();
-        const stubbedReturn = {
-            "MainAdventureProgress" : stubbedStoryProgress
-        }
+        let storyStates;
 
-        res.json(stubbedReturn);
+        const sessionId = req.sessionID;
+        const ipAddress = req.clientIp;
+
+        // Get user account filtered on what is in "projection"
+        storyStates = await this.gameDAO.fetchFromAccount(
+            sessionId,
+            ipAddress,
+            { projection: { "storyStates": 1} }
+        );
+
+        // Get story states from filtered user account object
+        storyStates = storyStates.storyStates;
+
+        let storyProgress = mainStoryManager.getStoriesAndProgress(storyStates);
+
+        res.json(storyProgress);
     }
 
     async apiPossibleAdventures(req, res, next){
@@ -82,7 +94,7 @@ export default class AdventureController {
         {
             title: "Begin Greg's Adventure",
             link: "#"
-        }])
+        }]);
     }
 
 }

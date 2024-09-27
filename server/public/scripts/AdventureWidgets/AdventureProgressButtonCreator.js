@@ -13,7 +13,7 @@ class AdventureProgressButtonCreator {
         const progressButton = document.getElementsByClassName("AdventureProgressButton");
         if (progressButton.length > 0 && progressButton[0]) {
             try {
-                const storyProgress = await fetch(apiLink + "get_adventure_progress", {
+                const storyProgress = await fetch(apiLink + "get_active_stories", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
