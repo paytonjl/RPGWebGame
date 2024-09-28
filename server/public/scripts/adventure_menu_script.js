@@ -10,7 +10,7 @@ fetch((apiLink + "get_active_stories"),{
     },
 })
 .then(res => res.json())
-.then(data => { //testing will need to create a loop to go through an array of these
+.then(data => { 
     data.forEach(element => {
         const linkElement = document.createElement('a');
         linkElement.href = element.link;// needs the backend to have the same object name link

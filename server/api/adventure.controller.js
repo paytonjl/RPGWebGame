@@ -97,4 +97,13 @@ export default class AdventureController {
         }]);
     }
 
+    //new for steven showing what its getting 
+    async apiGetStoryText(req, res, next){
+        res.json([
+            "the first thing to happen",
+            "quite a wonderful second thing",
+            "do we have a third yes we do"
+        ])
+    }
+
 }
