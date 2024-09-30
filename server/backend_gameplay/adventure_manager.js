@@ -32,6 +32,7 @@ export default class AdventureManager {
         return storyState;
     }
 
+    // Stubbed until we get some real links
     static getStoryStartLinkById(storyId) {
         if(storyId == StoryId.MainAdventure) {
             return "/mainAdventure";
@@ -71,6 +72,12 @@ export default class AdventureManager {
         }
 
         return storyProg;
+    }
+
+    static getDialog(sequenceId) {
+        let dialogSequence = [];
+
+
     }
 
 }

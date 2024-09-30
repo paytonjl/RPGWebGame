@@ -1,5 +1,6 @@
 import gameDAO from "../dao/gameDAO.js";
 import mainStoryManager from "../backend_gameplay/adventure_manager.js"
+import dialogManager from "../backend_gameplay/dialog_manager.js"
 
 export default class AdventureController {
     // Must be given a data access object used for accessing the game state
@@ -86,15 +87,25 @@ export default class AdventureController {
         res.json(storyProgress);
     }
 
-    async apiPossibleAdventures(req, res, next){
-        res.json([{
-            title: "Begin Main Adventure",
-            link: "#"
-        },
-        {
-            title: "Begin Greg's Adventure",
-            link: "#"
-        }]);
+    async apiGetDialogSequence(req, res, next){
+        try {
+            if(!req.sequenceId || !req.sessionID || !req.clientIp)
+            {
+                console.log("Null request apiGetDialogSequence");
+                res.status(500).json({ status: "failure", error: e.message });
+            }
+
+            const sessionId = req.sessionID;
+            const ipAddress = req.clientIp;
+            // Ensure that the players account can transition into the new
+            // sequenceId here by checking the state machine
+
+            res.dialogSequence = dialogManager.loadSequence(req.sequenceId);
+
+        } catch (e) {
+            res.status(500).json({ status: "failure", error: e.message });
+        }
+
     }
 
 }
