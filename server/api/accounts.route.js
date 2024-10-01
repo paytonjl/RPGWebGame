@@ -1,8 +1,8 @@
-import express from "express"
-import AccountsCtrl from "./accounts.controller.js"
+import express from "express";
+import AccountsCtrl from "./accounts.controller.js";
 
 // This class handles initializing the adventure router as well as binding the
-// adventure controller to it. 
+// adventure controller to it.
 export default class accountsRouterInitializer {
     constructor(accountsController) {
         this.accountsController = accountsController;
@@ -12,18 +12,34 @@ export default class accountsRouterInitializer {
         this.bindRoutes();
     }
 
-    // In order for the router to actually call the method function of 
-    // this.accountsController, you need to bind the actual instance of the 
-    // object to it. If you don't do that it will call the api 
+    // In order for the router to actually call the method function of
+    // this.accountsController, you need to bind the actual instance of the
+    // object to it. If you don't do that it will call the api
     // methods as if it was static and then the function wouldn't have access
-    // to the object's member variables. 
+    // to the object's member variables.
     bindRoutes() {
-        this.accountsRouter.route("/login").post(this.accountsController.apiLoginAccount.bind(this.accountsController));
-        this.accountsRouter.route("/create_account").post(this.accountsController.apiCreateAccount.bind(this.accountsController));
-        this.accountsRouter.route("/get_user").post(this.accountsController.apiGetUser.bind(this.accountsController));
+        this.accountsRouter
+            .route("/login")
+            .post(
+                this.accountsController.apiLoginAccount.bind(
+                    this.accountsController
+                )
+            );
+        this.accountsRouter
+            .route("/create_account")
+            .post(
+                this.accountsController.apiCreateAccount.bind(
+                    this.accountsController
+                )
+            );
+        this.accountsRouter
+            .route("/get_user")
+            .post(
+                this.accountsController.apiGetUser.bind(this.accountsController)
+            );
     }
 
-    getaccountsRouter() {
+    getAccountsRouter() {
         return this.accountsRouter;
     }
-} 
+}

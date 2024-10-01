@@ -1,6 +1,6 @@
 import gameDAO from "../dao/gameDAO.js";
-import mainStoryManager from "../backend_gameplay/adventure_manager.js"
-import dialogManager from "../backend_gameplay/dialog_manager.js"
+import mainStoryManager from "../backend_gameplay/adventure_manager.js";
+import dialogManager from "../backend_gameplay/dialog/dialog_manager.js";
 
 export default class AdventureController {
     // Must be given a data access object used for accessing the game state
@@ -9,8 +9,7 @@ export default class AdventureController {
         this.gameDAO = gameDAO;
     }
 
-    async apiInitializeNewUserStories(req, res, next)
-    {
+    async apiInitializeNewUserStories(req, res, next) {
         try {
             if (!req.sessionID) {
                 console.log("Fatal there is no session id");
@@ -25,7 +24,7 @@ export default class AdventureController {
             const username = await this.gameDAO.updateUserAccount(
                 sessionId,
                 ipAddress,
-                ({ $set: { storyStates } })
+                { $set: { storyStates } }
             );
             if (username && username.error) {
                 throw new Error(username.error);
@@ -36,7 +35,6 @@ export default class AdventureController {
             res.status(500).json({ status: "failure", error: e.message });
         }
     }
-
 
     async apiGetStoryProgress(req, res, next) {
         try {
@@ -76,7 +74,7 @@ export default class AdventureController {
         storyStates = await this.gameDAO.fetchFromAccount(
             sessionId,
             ipAddress,
-            { projection: { "storyStates": 1} }
+            { projection: { storyStates: 1 } }
         );
 
         // Get story states from filtered user account object
@@ -87,11 +85,12 @@ export default class AdventureController {
         res.json(storyProgress);
     }
 
-    async apiGetDialogSequence(req, res, next){
+    async apiGetDialogSequence(req, res, next) {
         try {
-            if(!req.sequenceId || !req.sessionID || !req.clientIp)
-            {
-                console.log("Null request apiGetDialogSequence");
+            const { sequenceId } = req.body;
+
+            if (!sequenceId || !req.sessionID || !req.clientIp) {
+                console.log("Null in request apiGetDialogSequence");
                 res.status(500).json({ status: "failure", error: e.message });
             }
 
@@ -100,12 +99,11 @@ export default class AdventureController {
             // Ensure that the players account can transition into the new
             // sequenceId here by checking the state machine
 
-            res.dialogSequence = dialogManager.loadSequence(req.sequenceId);
-
+            const dialogSequence = dialogManager.loadSequence(req.sequenceId);
+            res.dialogSequence = dialogSequence;
+            console.log(dialogSequence);
         } catch (e) {
             res.status(500).json({ status: "failure", error: e.message });
         }
-
     }
-
 }

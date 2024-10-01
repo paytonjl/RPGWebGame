@@ -1,19 +1,19 @@
 //import app from "./server.js" THIS IS GONE WHILE SERVER FILE IS GONE
-import mongodb, { Collection } from "mongodb"
-import dotenv from "dotenv"
-import AccountsDAO from "./dao/accountsDAO.js"
-import GameDAO from "./dao/gameDAO.js"
-import session from "express-session" 
-import MongoStore from "connect-mongo" 
-import express from "express"
-import requestIp from "request-ip"
-import AccountsRouterInitializer from "./api/accounts.route.js"
-import AdventureRoutesInitializer from "./api/adventure.route.js"
-import AdventureController from "./api/adventure.controller.js"
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import { join } from 'path';
-import AccountsController from "./api/accounts.controller.js"
+import mongodb, { Collection } from "mongodb";
+import dotenv from "dotenv";
+import AccountsDAO from "./dao/accountsDAO.js";
+import GameDAO from "./dao/gameDAO.js";
+import session from "express-session";
+import MongoStore from "connect-mongo";
+import express from "express";
+import requestIp from "request-ip";
+import AccountsRouterInitializer from "./api/accounts.route.js";
+import AdventureRoutesInitializer from "./api/adventure.route.js";
+import AdventureController from "./api/adventure.controller.js";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+import { join } from "path";
+import AccountsController from "./api/accounts.controller.js";
 
 dotenv.config();
 
@@ -26,8 +26,8 @@ app.use(express.json());
 app.use(express.static(__dirname + "/public"));
 app.use(requestIp.mw());
 
-const MongoClient = mongodb.MongoClient
-const uri = process.env["MongoDB_API_KEY"]
+const MongoClient = mongodb.MongoClient;
+const uri = process.env["MongoDB_API_KEY"];
 
 const mongoStore = new MongoStore({
     mongoUrl: process.env.MongoDB_API_KEY,
@@ -39,14 +39,14 @@ const mongoStore = new MongoStore({
 try {
     app.use(
         session({
-            secret: 'your_secret_key_here',
+            secret: "your_secret_key_here",
             resave: false,
             saveUninitialized: true,
-            cookie: { 
-                maxAge: (7 * 24 *60 * 60 * 1000),
+            cookie: {
+                maxAge: 7 * 24 * 60 * 60 * 1000,
                 //secure: true,
                 //expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // atempt to get cookies working on frontend
-                //httpOnly: true, //add later for security 
+                //httpOnly: true, //add later for security
                 //name: "token",
                 //sameSite: "none",
             },
@@ -57,39 +57,41 @@ try {
     console.error("Failed to initialize MongoStore:", error);
 }
 
-MongoClient.connect(
-    uri,
-    {
-        maxPoolSize: 50,
-        wtimeoutMS: 2500,
-    })
-    .catch(err => {
+MongoClient.connect(uri, {
+    maxPoolSize: 50,
+    wtimeoutMS: 2500,
+})
+    .catch((err) => {
         console.error(err.stack);
         process.exit(1);
     })
-    .then(async client =>{
-
+    .then(async (client) => {
         const accountsDAO = new AccountsDAO();
         const gameDAO = new GameDAO();
-        
 
-        await accountsDAO.injectDB(client)
+        await accountsDAO.injectDB(client);
         await gameDAO.injectDB(client);
 
         const accountsController = new AccountsController(accountsDAO);
-        const accountsRouterInitializer = new AccountsRouterInitializer(accountsController);
+        const accountsRouterInitializer = new AccountsRouterInitializer(
+            accountsController
+        );
 
         const adventureController = new AdventureController(gameDAO);
-        const adventureRoutesInitializer = new AdventureRoutesInitializer(adventureController);
-        initializeRoutes(accountsRouterInitializer.getaccountsRouter(), adventureRoutesInitializer.getAdventureRouter());
+        const adventureRoutesInitializer = new AdventureRoutesInitializer(
+            adventureController
+        );
+        initializeRoutes(
+            accountsRouterInitializer.getAccountsRouter(),
+            adventureRoutesInitializer.getAdventureRouter()
+        );
 
         app.listen(port, () => {
-            console.log(`listening on port ${port}`)
-        })
-    })
+            console.log(`listening on port ${port}`);
+        });
+    });
 
-function initializeRoutes(accountsRouter, adventureRouter)
-{
+function initializeRoutes(accountsRouter, adventureRouter) {
     //routes
     app.use("/api/v1/accounts", accountsRouter);
     app.use("/api/v1/adventure", adventureRouter);
@@ -97,9 +99,9 @@ function initializeRoutes(accountsRouter, adventureRouter)
     app.get("/", (req, res) => {
         res.sendFile(join(__dirname, "/public/views/index.html"));
     });
-    app.get('/some-route', (req, res) => {
-        console.log('Reached redirect point');
-        res.redirect('/');
+    app.get("/some-route", (req, res) => {
+        console.log("Reached redirect point");
+        res.redirect("/");
     });
 
     app.get("/login", (req, res) => {
@@ -112,6 +114,8 @@ function initializeRoutes(accountsRouter, adventureRouter)
     app.get("/adventure_menu", (req, res) => {
         res.sendFile(join(__dirname, "/public/views/adventure_menu.html"));
     });
-    
-    app.use("*", (req, res) => res.status(400).json({error: "Page not found"}));
+
+    app.use("*", (req, res) =>
+        res.status(400).json({ error: "Page not found" })
+    );
 }

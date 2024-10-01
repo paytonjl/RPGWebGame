@@ -1,4 +1,3 @@
-
 // Displays the users current progress through the main story of the adventure
 // When clicked, will bring the user to the part of the adventure that they last
 // left off
@@ -10,18 +9,38 @@ class AdventureProgressButtonCreator {
     }
 
     async createProgressButton() {
-        const progressButton = document.getElementsByClassName("AdventureProgressButton");
+        const progressButton = document.getElementsByClassName(
+            "AdventureProgressButton"
+        );
+
+        const params = {
+            sequenceId: "0",
+        };
+        const options = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(params),
+        };
+        await fetch(apiLink + "get_dialog_sequence", options).then((response) =>
+            response.json()
+        );
+
         if (progressButton.length > 0 && progressButton[0]) {
             try {
-                const storyProgress = await fetch(apiLink + "get_dialog_sequence", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({}),
-                }).then((response) => response.json());
+                const storyProgress = await fetch(
+                    apiLink + "get_dialog_sequence",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(params),
+                    }
+                ).then((response) => response.json());
 
-                console.log(storyProgress)
+                console.log(storyProgress);
             } catch (e) {
                 console.log(e);
             }
@@ -50,12 +69,12 @@ class AdventureProgressButtonCreator {
 
         //this.accountButton.innerHTML = "";
         //this.accountButton.appendChild(newButton);
-        
+
         //newButton.addEventListener("click", this.handleClick.bind(this));
     }
 
     async handleClick(event) {
-      // Remove the default button behavior
+        // Remove the default button behavior
         event.preventDefault();
 
         try {
@@ -67,10 +86,7 @@ class AdventureProgressButtonCreator {
                 body: JSON.stringify({}),
             });
         } catch (e) {
-                console.log(e);
+            console.log(e);
         }
-
-
     }
-
 }
