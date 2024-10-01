@@ -99,7 +99,7 @@ export default class AdventureController {
             // Ensure that the players account can transition into the new
             // sequenceId here by checking the state machine
 
-            const dialogSequence = dialogManager.loadSequence(req.sequenceId);
+            const dialogSequence = dialogManager.loadSequence(sequenceId);
             res.dialogSequence = dialogSequence;
             console.log(dialogSequence);
         } catch (e) {
