@@ -46,6 +46,13 @@ export default class adventureRouterInitializer {
                     this.adventureController
                 )
             );
+        this.adventureRouter
+            .route("/get_storytext")
+            .get(
+                this.adventureController.apiGetStoryText.bind(
+                    this.adventureController
+                )
+            );
     }
 
     getAdventureRouter() {

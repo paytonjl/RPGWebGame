@@ -106,4 +106,25 @@ export default class AdventureController {
             res.status(500).json({ status: "failure", error: e.message });
         }
     }
+    async apiPossibleAdventures(req, res, next) {
+        res.json([
+            {
+                title: "Begin Main Adventure",
+                link: "#",
+            },
+            {
+                title: "Begin Greg's Adventure",
+                link: "#",
+            },
+        ]);
+    }
+
+    //new for steven showing what its getting
+    async apiGetStoryText(req, res, next) {
+        res.json([
+            "the first thing to happen",
+            "quite a wonderful second thing",
+            "do we have a third yes we do",
+        ]);
+    }
 }

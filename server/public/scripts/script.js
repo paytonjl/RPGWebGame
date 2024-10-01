@@ -28,11 +28,11 @@ fetch('../views/navbar.html')
     player_menu_button.addEventListener("click",function(e){
         if (window.getComputedStyle(player_menu).display === "none"){
             player_menu.style.display = "flex";
-            secondary_menu.style.width = "70%";
+            secondary_menu.style.width = "69%";
             secondary_menu.style.marginLeft = "31%";
         } else {
             player_menu.style.display = "none";
-            secondary_menu.style.width = "100%";
+            secondary_menu.style.width = "99%";
             secondary_menu.style.marginLeft = "1%";
         }
 
