@@ -1,35 +1,66 @@
-const apiLink = "http://localhost:8000/api/v1/adventure/"
+const adventureApiLink = "http://localhost:8000/api/v1/adventure/";
 
 const text = document.getElementById("text");
-const background= document.getElementById("background");
+const background = document.getElementById("background");
 
-//need the backend to have the right apilink and fucntion named possible_adventures
-fetch((apiLink + "get_storytext"),{
-    method: 'GET',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-})
-.then(res => res.json())
-.then(data => { 
+async function fetchDialog() {
+    const params = {
+        sequenceId: "0",
+    };
+    const options = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(params),
+    };
+    try {
+        const response = await fetch(
+            adventureApiLink + "get_dialog_sequence",
+            options
+        );
+        const data = response.json();
+        return data;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+// TODO: Define where you can go to see the dialog sequence JSON structure
+function parseText(dialogSequences) {
+    let textSequences = [];
+    dialogSequences.dialogArray.forEach((sequence) => {
+        sequence.text.forEach((text) => {
+            textSequences.push(text);
+        });
+    });
+
+    return textSequences;
+}
+
+function renderText(textToRender) {
     let i = 0;
     let allDone = false;
     text.textContent = data[i];
+}
 
-    function nextText(){
-        if (!allDone){
+fetchDialog().then((data) => {
+    let textToRender = parseText(data);
+
+    let i = 0;
+    let allDone = false;
+    text.textContent = textToRender[i];
+
+    function nextText() {
+        if (!allDone) {
             i++;
-            if (i === data.length){
+            if (i === textToRender.length) {
                 allDone = true;
-            }
-            else {
-                text.textContent = data[i];
+            } else {
+                text.textContent = textToRender[i];
             }
         }
     }
-    
+
     background.addEventListener("click", nextText);
-})
-.catch((error) => {
-    console.error('Error:', error); //test
 });

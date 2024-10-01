@@ -100,12 +100,13 @@ export default class AdventureController {
             // sequenceId here by checking the state machine
 
             const dialogSequence = dialogManager.loadSequence(sequenceId);
-            res.dialogSequence = dialogSequence;
             console.log(dialogSequence);
+            res.json(dialogSequence);
         } catch (e) {
             res.status(500).json({ status: "failure", error: e.message });
         }
     }
+
     async apiPossibleAdventures(req, res, next) {
         res.json([
             {
