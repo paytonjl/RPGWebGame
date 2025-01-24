@@ -1,0 +1,15 @@
+#formFlexContainer{
+    display: flex;
+    height: 90vh;
+    justify-content: center;
+    align-items: center;
+}
+
+#formContainer{
+    display: flex;
+    border-style: solid;
+    background-color: gray;
+    padding: 1%;
+    justify-content: space-around;
+    align-items: center;
+}

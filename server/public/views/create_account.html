@@ -3,6 +3,7 @@
     <head>
         <title>Create Account</title>
         <link rel="stylesheet" href="styles/style.css">
+        <link rel="stylesheet" href="styles/form_style.css">
     </head>
     <body>
         <nav class="navbar">
@@ -10,28 +11,32 @@
         </nav>
 
             <div id="secondary_menu">
-                <form id="create_accountForm">
-                    <lable for="email"><b class="info">Email</b></lable>
-                    <br>
-                    <input type="text" name="email" id="email">
-                    <br>
-                    <label for="username"><b class="info">Username</b></label>
-                    <br>
-                    <input type="text" name="username" id="username">
-                    <br>
-                    <label for="password1"><b class="info">Password</b></label>
-                    <br>
-                    <input type="text" name="password1" id="password1">
-                    <br>
-                    <label for="password2"><b class="info">Confirm Password</b></label>
-                    <br>
-                    <input type="text" name="password2" id="password2">
-                    <br>
-                    <br>
-                    <input type="submit" value="Create">
-                </form>
-                <div id="test1"></div> <!-- testing for a place to put output if successful-->
-                <div id="test2"></div>
+                <div id="formFlexContainer">
+                    <div id="formContainer">
+                        <form id="create_accountForm">
+                            <lable for="email"><b class="info">Email</b></lable>
+                            <br>
+                            <input type="text" name="email" id="email">
+                            <br>
+                            <label for="username"><b class="info">Username</b></label>
+                            <br>
+                            <input type="text" name="username" id="username">
+                            <br>
+                            <label for="password1"><b class="info">Password</b></label>
+                            <br>
+                            <input type="text" name="password1" id="password1">
+                            <br>
+                            <label for="password2"><b class="info">Confirm Password</b></label>
+                            <br>
+                            <input type="text" name="password2" id="password2">
+                            <br>
+                            <br>
+                            <input type="submit" value="Create">
+                        </form>
+                        <div id="test1"></div> <!-- testing for a place to put output if successful-->
+                        <div id="test2"></div>
+                    </div>
+                </div>
             </div>
 
         </div>

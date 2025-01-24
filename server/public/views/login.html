@@ -3,6 +3,7 @@
     <head>
         <title>Login</title>
         <link rel="stylesheet" href="styles/style.css">
+        <link rel="stylesheet" href="styles/form_style.css">
     </head>
 
     <body>
@@ -11,20 +12,25 @@
         </nav>
 
             <div id="secondary_menu">
-                <form id="loginForm">
-                    <lable for="emailOrUsername"><b class="info">Email or Username</b></lable>
-                    <br>
-                    <input type="text" name="emailOrUsername" id="emailOrUsername">
-                    <br>
-                    <label for="password"><b class="info">Password</b></label>
-                    <br>
-                    <input type="text" name="password" id="password">
-                    <br>
-                    <br>
-                    <input type="submit" value="login">
-                    <br>
-                    <p>Need to make an account: <a href="create_account">Create a New Account.</a></p>
-                </form>
+                <div id="formFlexContainer">
+                    <div id="formContainer">
+                        <form id="loginForm">
+                            <lable for="emailOrUsername"><b class="info">Email or Username</b></lable>
+                            <br>
+                            <input type="text" name="emailOrUsername" id="emailOrUsername">
+                            <br>
+                            <label for="password"><b class="info">Password</b></label>
+                            <br>
+                            <input type="text" name="password" id="password">
+                            <br>
+                            <br>
+                            <input type="submit" value="login">
+                            <br>
+                            <p>Need to make an account:</p>
+                            <a href="create_account">Create a New Account.</a>
+                        </form>
+                    </div>
+                </div>
                 <div id="test"></div> <!-- testing for a place to put output if successful-->
                 <div id="test2"></div>
             </div>
