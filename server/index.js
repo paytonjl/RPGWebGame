@@ -119,6 +119,10 @@ function initializeRoutes(accountsRouter, adventureRouter) {
         res.sendFile(join(__dirname, "/public/views/storytext.html"));
     });
 
+    app.get("/account", (req, res) => {
+        res.sendFile(join(__dirname, "/public/views/account.html"));
+    });
+
     app.use("*", (req, res) =>
         res.status(400).json({ error: "Page not found" })
     );

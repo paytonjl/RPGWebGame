@@ -1,9 +1,3 @@
-let xp = 0;
-let coin = 0;
-
-let inventory = ["stick"];
-let health = 100;
-
 const nav = document.querySelector('.navbar')
 fetch('../views/navbar.html')
 .then(res=>res.text())
@@ -41,4 +35,32 @@ fetch('../views/navbar.html')
         console.error("one or more required elements not found")
     }
 
+})
+
+async function checkUser() {
+    try {
+        const isUserValid = await fetch("http://localhost:8000/api/v1/accounts/" + "get_user", {
+            method: "POST",
+            headers: {
+                "Content-Type": "text/plain",
+            },
+            body: JSON.stringify({}),
+        }).then((response) => response.text());
+
+        if (isUserValid == "true") {
+            const accountButton = document.getElementById("account_button");
+            accountButton.href = "account";
+            accountButton.textContent = "Account";
+        } else {
+            console.log(isUserValid);
+        }
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+checkUser().then(() => {
+    console.log("Check completed")
+}).catch(err => {
+    console.error("Error in checkUser", err);
 })
