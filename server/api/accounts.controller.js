@@ -83,6 +83,24 @@ export default class AccountsController {
         } // could add an if statment to make sure the error has a string
     }
 
+    async apiGetUsername(req, res, next) {
+        try {
+            if (!req.sessionID || !await this.accountsDAO.validateSessionId(req.sessionID, req.clientIp)) {
+                throw new Error("Invalid session");
+            }
+            
+            const username = await this.accountsDAO.getUsername(req.sessionID);
+            if (!username) {
+                throw new Error("User not found");
+            }
+            
+            res.json({ status: "success", username });
+        } catch (e) {
+            console.log("username can not be found");
+            res.status(401).json({ status: "failure", error: e.message });
+        }
+    }
+
     async apiLogOut(req, res, next) {
         this.accountsDAO.updateUserAccount(req.sessionID, req.clientIp, {
             currentSessionId: null,
