@@ -107,4 +107,17 @@ export default class AccountsDAO extends BasicDAO {
             return { error: e }
         }
     }
+
+    async getUsername(sessionID) {
+        try {
+            let sessionFillter = {currentSessionId: sessionID}
+            let account = await this.mongoDatabase.findOne(sessionFillter)
+            return account.username
+
+        } catch (e) {
+            console.log("Unable to find the Username") // test 
+            console.error(`unable to find the username: ${e}`) //test
+            return { error: e }
+        }
+    }
 }

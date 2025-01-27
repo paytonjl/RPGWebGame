@@ -18,7 +18,6 @@ async function getUserName() {
         }
 
         const data = await response.json();
-        console.log(data.username);
         return data.username;
 
     } catch (e) {
@@ -26,8 +25,7 @@ async function getUserName() {
     }
 }
 
-getUserName().then(() => {
-    console.log("getusername completed")
-}).catch(err => {
-    console.error("Error in getUserName", err);
+getUserName().then(userName => {
+    const userNamePlacement = document.getElementById("playerName")
+    userNamePlacement.textContent = userName
 })

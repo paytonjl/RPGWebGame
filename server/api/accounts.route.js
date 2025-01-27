@@ -38,7 +38,7 @@ export default class accountsRouterInitializer {
                 this.accountsController.apiGetUser.bind(this.accountsController)
             );
         this.accountsRouter
-            .route("get_username")
+            .route("/get_username")
             .post(
                 this.accountsController.apiGetUsername.bind(this.accountsController)
             );
