@@ -42,6 +42,11 @@ export default class accountsRouterInitializer {
             .post(
                 this.accountsController.apiGetUsername.bind(this.accountsController)
             );
+        this.accountsRouter
+            .route("/logout")
+            .post(
+                this.accountsController.apiLogOut.bind(this.accountsController)
+            )
     }
 
     getAccountsRouter() {
