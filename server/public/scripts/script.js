@@ -64,3 +64,30 @@ checkUser().then(() => {
 }).catch(err => {
     console.error("Error in checkUser", err);
 })
+
+async function beginningSession() {
+    try {
+        const isFirstSession = await fetch("http://localhost:8000/api/v1/accounts/" + "beginningSession", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            
+        }).then((response) => response.text())
+        .then(data => {
+            if (data.status === "success") {
+                console.log('yay beginning sessions is working on frontend')
+            } else {
+                console.log('nay beginnng sessions is broken on front end')
+            }
+        })
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+beginningSession().then(() => {
+    console.log("session begone")
+}).catch(err => {
+    console.error("Error in beginningSession", err);
+})

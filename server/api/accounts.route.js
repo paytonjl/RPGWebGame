@@ -19,6 +19,13 @@ export default class accountsRouterInitializer {
     // to the object's member variables.
     bindRoutes() {
         this.accountsRouter
+            .route("/beginningSession")
+            .post(
+                this.accountsController.apiBeginningSession.bind(
+                    this.accountsController
+                )
+            );
+        this.accountsRouter
             .route("/login")
             .post(
                 this.accountsController.apiLoginAccount.bind(

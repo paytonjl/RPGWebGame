@@ -2,6 +2,7 @@ import mongodb from "mongodb"
 import dotenv from "dotenv"
 import bcrypt from "bcrypt"
 import BasicDAO from "./basicDAO.js"
+import accountDoc from "../data/accountDoc.js"
 
 const saltRounds = process.env["saltRounds"]
 
@@ -10,8 +11,9 @@ export default class AccountsDAO extends BasicDAO {
         super()
     }
     
-    async createAccount(email, username, password1, password2){
+    async createAccount(email, username, password1, password2, sessionId) {
         try {
+            //!!!!!!posibly vailidate guest account before allowing the rest of this
             if (password1 != password2) {
                 throw new Error("passwords do not match")
             }
@@ -32,14 +34,20 @@ export default class AccountsDAO extends BasicDAO {
             const salt = await bcrypt.genSalt(saltRounds);
             const hashedPassword = await bcrypt.hash(password1, salt);
 
-            const accountDoc = {
-                email: email,
-                username: username,
-                password: hashedPassword,
-                currentSessionId: null,
-                currentSessionIpAddress: null,
+            const sessionIdFilter = {currentSessionId: sessionId}
+            let account = await this.mongoDatabase.findOne(sessionIdFilter)
+
+            if (account){
+                account.email = email;
+                account.username = username;
+                account.password = hashedPassword;
+
+                const newAccount = await this.mongoDatabase.updateOne(account);
+                return {status:"success"}
+            } else {
+                throw new Error("Error with current session!");
             }
-            return await this.mongoDatabase.insertOne(accountDoc)
+            
         } catch (e) {
             console.error(`unable to create account: ${e}`) //test
             return { error: e }
@@ -107,6 +115,25 @@ export default class AccountsDAO extends BasicDAO {
             return { error: e }
         }
     }
+
+    async beginningSession(sessionId, clientIpAddress) {
+        try {
+            
+            const newAccountDoc = {
+                ...accountDoc,
+                currentSessionId: sessionId,
+                currentSessionIpAddress: clientIpAddress,
+            }
+
+            const whatsthis = await this.mongoDatabase.insertOne(newAccountDoc);
+            console.log("whats this", whatsthis)
+            return whatsthis
+            
+        } catch (e) {
+            console.error(`unable to create guest account: ${e}`) //test
+            return { error: e }
+        }
+    } 
 
     async getUsername(sessionID) {
         try {

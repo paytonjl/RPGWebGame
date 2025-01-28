@@ -8,18 +8,54 @@ export default class AccountsController {
         this.accountsDAO = accountsDAO;
     }
 
+    async apiBeginningSession(req, res, next) {
+        try {
+            const sessionId = req.sessionID;
+            const clientIpAddress = req.clientIp;
+            
+            if (!await this.accountsDAO.validateSessionId(sessionId, clientIpAddress)) { 
+                const accountResponse = await this.accountsDAO.beginningSession(
+                    clientIpAddress,
+                    sessionId
+                );
+
+                if (accountResponse && accountResponse.error) {
+                    throw new Error(accountResponse.error);
+                } else {
+                    console.log("did we get here")
+                    res.json({
+                        status: "success",
+                        message: "1st session created successfully",
+                    });
+                }
+            } else {
+                res.json({
+                    status: "failure",
+                        message: "1st session has gone wrong in the controller",
+                });
+            }
+
+        } catch (e) {
+            console.log("Could not start session"); // test
+            res.status(401).json({ status: "failure", error: e.message });
+        } 
+        
+    }
+
     async apiCreateAccount(req, res, next) {
         try {
             const email = req.body.email;
             const username = req.body.username;
             const password1 = req.body.password1;
             const password2 = req.body.password2;
+            const sessionId = req.sessionID;
 
             const accountResponse = await this.accountsDAO.createAccount(
                 email,
                 username,
                 password1,
-                password2
+                password2,
+                sessionId
             );
             if (accountResponse && accountResponse.error) {
                 throw new Error(accountResponse.error);
@@ -72,7 +108,7 @@ export default class AccountsController {
             if (
                 await this.accountsDAO.validateSessionId(req.sessionID, req.clientIp)
             ) {
-                //console.log("We found the user account!");
+                //We found the user account!
                 res.send(true);
             } else {
                 res.send(false);
@@ -82,6 +118,7 @@ export default class AccountsController {
             res.status(401).json({ status: "failure", error: e.message });
         } // could add an if statment to make sure the error has a string
     }
+
 
     async apiGetUsername(req, res, next) {
         try {

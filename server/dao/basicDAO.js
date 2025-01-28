@@ -59,7 +59,6 @@ export default class BasicDAO {
             
             if( clientIpAddress == userAccount.currentSessionIpAddress &&
                 sessionId == userAccount.currentSessionId) {
-                //console.log("true");
                 return true;
             }
             else {
