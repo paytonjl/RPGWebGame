@@ -47,13 +47,13 @@ export default class BasicDAO {
 
             if(!userAccount)
             {
-                console.log("Couldn't find user account associated with id " + sessionId);
+                //console.log("Couldn't find user account associated with id " + sessionId);
                 return false;
             }
             
             if(!userAccount.currentSessionId || !userAccount.currentSessionIpAddress)
             {
-                console.log("currentSessionId or currentSessionIpAddress missing for " + sessionId);
+                //console.log("currentSessionId or currentSessionIpAddress missing for " + sessionId);
                 return false;
             }
             
@@ -62,7 +62,7 @@ export default class BasicDAO {
                 return true;
             }
             else {
-                console.log("no match client IP: " + clientIpAddress + " last IP: " + userAccount.currentSessionIpAddress + " client session id " + sessionId + " last sessionId " + userAccount.currentSessionId );
+                //console.log("no match client IP: " + clientIpAddress + " last IP: " + userAccount.currentSessionIpAddress + " client session id " + sessionId + " last sessionId " + userAccount.currentSessionId );
                 return false;
             }
         } catch (e) {
@@ -82,13 +82,13 @@ export default class BasicDAO {
             
             if(!userAccount)
             {
-                console.log("Couldn't find user account associated with id " + sessionId);
+                //console.log("Couldn't find user account associated with id " + sessionId);
                 return false;
             }
 
             if(!userAccount.currentSessionId || !userAccount.currentSessionIpAddress)
             {
-                console.log("currentSessionId or currentSessionIpAddress missing for " + sessionId);
+                //console.log("currentSessionId or currentSessionIpAddress missing for " + sessionId);
                 return false;
             }
 
@@ -115,19 +115,19 @@ export default class BasicDAO {
 
             if(!userAccount)
             {
-                console.log("Couldn't find user account associated with id " + sessionId);
+                //console.log("Couldn't find user account associated with id " + sessionId);
                 return false;
             }
 
             if(!userAccount.currentSessionId || !userAccount.currentSessionIpAddress)
             {
-                console.log("currentSessionId or currentSessionIpAddress missing for " + sessionId);
+                //console.log("currentSessionId or currentSessionIpAddress missing for " + sessionId);
                 return false;
             }
 
             if( currentIpAddress != userAccount.currentSessionIpAddress ||
                 sessionId != userAccount.currentSessionId) {
-                console.log("Credentials don't match up");
+                //console.log("Credentials don't match up");
                 return false;
             }
 

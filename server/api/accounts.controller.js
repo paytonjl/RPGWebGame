@@ -15,14 +15,13 @@ export default class AccountsController {
             
             if (!await this.accountsDAO.validateSessionId(sessionId, clientIpAddress)) { 
                 const accountResponse = await this.accountsDAO.beginningSession(
+                    sessionId,
                     clientIpAddress,
-                    sessionId
                 );
 
                 if (accountResponse && accountResponse.error) {
                     throw new Error(accountResponse.error);
                 } else {
-                    console.log("did we get here")
                     res.json({
                         status: "success",
                         message: "1st session created successfully",
@@ -30,8 +29,8 @@ export default class AccountsController {
                 }
             } else {
                 res.json({
-                    status: "failure",
-                        message: "1st session has gone wrong in the controller",
+                    status: "success",
+                        message: "account session already exist",
                 });
             }
 
@@ -82,7 +81,6 @@ export default class AccountsController {
             const ipAddress = req.clientIp;
             const sessionId = req.sessionID;
 
-            console.log("ip address: " + ipAddress);
             const accountResponse = await this.accountsDAO.loginAccount(
                 emailOrUsername,
                 password,
@@ -90,35 +88,15 @@ export default class AccountsController {
                 sessionId
             );
 
-            console.log(emailOrUsername); // test
-            console.log(accountResponse.error); // test
             if (accountResponse && accountResponse.error) {
                 throw new Error(accountResponse.error);
             } else {
                 res.json({ status: "success" });
             }
         } catch (e) {
-            console.log("account not found"); // test
             res.status(401).json({ status: "failure", error: e.message });
         } // could add an if statment to make sure the error has a string
     }
-
-    async apiGetUser(req, res, next) {
-        try {
-            if (
-                await this.accountsDAO.validateSessionId(req.sessionID, req.clientIp)
-            ) {
-                //We found the user account!
-                res.send(true);
-            } else {
-                res.send(false);
-            }
-        } catch (e) {
-            console.log("account not found"); // test
-            res.status(401).json({ status: "failure", error: e.message });
-        } // could add an if statment to make sure the error has a string
-    }
-
 
     async apiGetUsername(req, res, next) {
         try {
@@ -136,6 +114,30 @@ export default class AccountsController {
             console.log("username can not be found");
             res.status(401).json({ status: "failure", error: e.message });
         }
+    }
+
+    async apiGetUser(req, res, next) {
+        try {
+            if (!req.sessionID || !await this.accountsDAO.validateSessionId(req.sessionID, req.clientIp)) {
+                throw new Error("Invalid session");
+            }
+            
+            const username = await this.accountsDAO.getUsername(req.sessionID);
+            if (!username) {
+                throw new Error("User not found");
+            }
+
+            if ( username === "Guest") {
+                //We found the guest account!
+                res.send(false);
+            } else {
+                //user with their own username
+                res.send(true);
+            }
+        } catch (e) {
+            console.log("account not found"); // test
+            res.status(401).json({ status: "failure", error: e.message });
+        } // could add an if statment to make sure the error has a string
     }
 
     async apiLogOut(req, res, next) {

@@ -54,7 +54,6 @@ export default class AdventureController {
             if (username && username.error) {
                 throw new Error(username.error);
             } else {
-                console.log(username);
                 res.json(username);
             }
         } catch (e) {

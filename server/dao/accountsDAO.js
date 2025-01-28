@@ -35,18 +35,18 @@ export default class AccountsDAO extends BasicDAO {
             const hashedPassword = await bcrypt.hash(password1, salt);
 
             const sessionIdFilter = {currentSessionId: sessionId}
-            let account = await this.mongoDatabase.findOne(sessionIdFilter)
 
-            if (account){
-                account.email = email;
-                account.username = username;
-                account.password = hashedPassword;
-
-                const newAccount = await this.mongoDatabase.updateOne(account);
-                return {status:"success"}
-            } else {
-                throw new Error("Error with current session!");
-            }
+            const newAccount = await this.mongoDatabase.updateOne(sessionIdFilter, 
+                {$set:{ email: email,
+                    username: username,
+                    password: hashedPassword,}},
+                (err, result) => {
+                    if (err) {
+                        console.error("Account Not found " + err);
+                    }
+                }
+            );
+                return {newAccount}
             
         } catch (e) {
             console.error(`unable to create account: ${e}`) //test
@@ -72,7 +72,6 @@ export default class AccountsDAO extends BasicDAO {
 
             if (account){
                 if (match) {
-                    console.log("Found the Account") // test
 
                     if(currentIpAddress != null)
                     {
@@ -118,16 +117,14 @@ export default class AccountsDAO extends BasicDAO {
 
     async beginningSession(sessionId, clientIpAddress) {
         try {
-            
             const newAccountDoc = {
                 ...accountDoc,
                 currentSessionId: sessionId,
                 currentSessionIpAddress: clientIpAddress,
             }
 
-            const whatsthis = await this.mongoDatabase.insertOne(newAccountDoc);
-            console.log("whats this", whatsthis)
-            return whatsthis
+            const newestAccountDoc = await this.mongoDatabase.insertOne(newAccountDoc);
+            return newestAccountDoc
             
         } catch (e) {
             console.error(`unable to create guest account: ${e}`) //test

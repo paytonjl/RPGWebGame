@@ -51,9 +51,7 @@ async function checkUser() {
             const accountButton = document.getElementById("account_button");
             accountButton.href = "account";
             accountButton.textContent = "Account";
-        } else {
-            console.log(isUserValid);
-        }
+        } 
     } catch (e) {
         console.log(e);
     }
@@ -73,7 +71,7 @@ async function beginningSession() {
                 'Content-Type': 'application/json',
             },
             
-        }).then((response) => response.text())
+        }).then((response) => response.json())
         .then(data => {
             if (data.status === "success") {
                 console.log('yay beginning sessions is working on frontend')
