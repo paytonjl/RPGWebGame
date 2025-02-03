@@ -54,6 +54,11 @@ export default class accountsRouterInitializer {
             .post(
                 this.accountsController.apiLogOut.bind(this.accountsController)
             )
+        this.accountsRouter
+            .route("/get_menus")
+            .post(
+                this.accountsController.apiGetMenus.bind(this.accountsController)
+            )
     }
 
     getAccountsRouter() {

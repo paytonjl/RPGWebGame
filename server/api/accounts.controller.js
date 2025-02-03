@@ -154,4 +154,22 @@ export default class AccountsController {
             }
         });
     }
+
+    async apiGetMenus(req, res, next) {
+        try {
+            if (!req.sessionID || !await this.accountsDAO.validateSessionId(req.sessionID, req.clientIp)) {
+                throw new Error("Invalid session");
+            }
+            
+            const menus = await this.accountsDAO.getMenus(req.sessionID);
+            if (!menus) {
+                throw new Error("menus not found");
+            }
+            
+            res.json({ status: "success", menus });
+        } catch (e) {
+            console.log("account menus could not be found");
+            res.status(401).json({ status: "failure", error: e.message });
+        }
+    }
 }

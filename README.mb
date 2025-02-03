@@ -14,3 +14,12 @@ then access your htmls i use a live server for vscode
 
 so far i just have a connection to the mongodb server and that allows for creating accounts which will be stored on the server 
 and the ability to be able to login to the accounts (this does nothing more than telling you that your username and password were correct)
+
+
+
+Notes !!!! 
+current bugs:
+    when visiting the site with no cookie it will not dynamicly load anything for the 
+ menu buttons since those are connected to accounts and you dont have an acocunt yet
+ need some way to refresh page after making an account or loading that after the guest account has been made
+

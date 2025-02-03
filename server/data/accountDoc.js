@@ -6,7 +6,7 @@ const accountDoc = {
     currentSessionIpAddress: null,
     homepage: {
         adventure: {
-            visable: true,
+            visible: true,
             href: "adventure_menu",
             currentAdventures: {
                 mainAdventure: {
@@ -15,15 +15,15 @@ const accountDoc = {
             },
         },
         party: {
-            visable: false,
+            visible: false,
             href: "#",
         },
         quest: {
-            visable: false,
+            visible: false,
             href: "#",
         },
         shop: {
-            visable: false,
+            visible: false,
             href: "#",
         },
     },

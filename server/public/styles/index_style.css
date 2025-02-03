@@ -17,6 +17,7 @@
     font-size: 100%;
     box-sizing: border-box;
     margin-top: 1%;
+    text-transform: capitalize;
 }
 #myrpg_menu a:nth-child(odd) {
     margin-right: 30%;

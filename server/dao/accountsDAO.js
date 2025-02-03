@@ -144,4 +144,32 @@ export default class AccountsDAO extends BasicDAO {
             return { error: e }
         }
     }
+
+    async getMenus(sessionID) {
+        try {
+            let sessionFillter = {currentSessionId: sessionID}
+            let account = await this.mongoDatabase.findOne(sessionFillter)
+
+            // looking to grab a list of object names, there visibilty boolean, and there href link with from account
+            if (!account || !account.homepage) {
+                return { error: 'Account not found or missing homepage'}
+            }
+
+            const menuItems = [];
+            for (const [sectionName, sectionData] of Object.entries(account.homepage)) {
+                menuItems.push({
+                    name: sectionName,
+                    visible: sectionData.visible,
+                    href: sectionData.href
+                });
+            }
+
+            return menuItems;
+
+        } catch (e) {
+            console.log("Unable to find the account menus") // test 
+            console.error(`unable to find the menus: ${e}`) //test
+            return { error: e }
+        }
+    }
 }
